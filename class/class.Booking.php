@@ -29,7 +29,7 @@ class Booking extends Connection
         $res = mysqli_query($this->connection, $queryPrice);
         $tableData = mysqli_fetch_assoc($res);
 
-        // Hitung total harga final di sisi server
+        // Hitung total harga final berdasarkan durasi dan harga asli meja
         $this->total_price = $tableData['price_per_hour'] * $this->duration_hours;
 
         $sql = "INSERT INTO bookings (userid, table_id, booking_date, start_time, duration_hours, total_price)
