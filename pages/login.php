@@ -15,7 +15,7 @@ if (isset($_POST['btnLogin'])) {
             if (!isset($_SESSION))
                 session_start();
 
-            // Rekam informasi penting identitas ke dalam Session server
+            // simpan data user ke session  
             $_SESSION["userid"] = $objUser->userid;
             $_SESSION["role"] = $objUser->role;
             $_SESSION["name"] = $objUser->name;
