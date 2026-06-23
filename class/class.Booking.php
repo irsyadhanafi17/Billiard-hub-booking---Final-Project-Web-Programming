@@ -24,7 +24,7 @@ class Booking extends Connection
 
     public function AddBooking()
     {
-        // Ambil harga asli meja per jam dari database untuk proteksi manipulasi harga di sisi client
+        // Ambil harga asli meja per jam dari database untuk proteksi manipulasi harga di sisi clients
         $queryPrice = "SELECT price_per_hour FROM billiard_tables WHERE table_id = '$this->table_id'";
         $res = mysqli_query($this->connection, $queryPrice);
         $tableData = mysqli_fetch_assoc($res);
