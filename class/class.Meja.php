@@ -12,7 +12,6 @@ class Meja extends Connection
     public $hasil = false;
     public $message = '';
 
-    // Magic Getter
     public function __get($attribute)
     {
         if (property_exists($this, $attribute)) {
@@ -20,7 +19,6 @@ class Meja extends Connection
         }
     }
 
-    // Magic Setter
     public function __set($attribute, $value)
     {
         if (property_exists($this, $attribute)) {
@@ -28,7 +26,6 @@ class Meja extends Connection
         }
     }
 
-    // Fungsi Tambah Data (Create)
     public function AddMeja()
     {
         $sql = "INSERT INTO meja (nomor_meja, kapasitas, lokasi, status)
@@ -42,7 +39,6 @@ class Meja extends Connection
         }
     }
 
-    // Fungsi Ambil Semua Data (Read All)
     public function SelectAllMeja()
     {
         $sql = "SELECT * FROM meja ORDER BY nomor_meja ASC";
@@ -66,7 +62,6 @@ class Meja extends Connection
         return $arrResult;
     }
 
-    // Fungsi Ambil Satu Data berdasarkan ID (Read One)
     public function SelectOneMeja()
     {
         $sql = "SELECT * FROM meja WHERE id_meja = '$this->id_meja'";
@@ -82,8 +77,7 @@ class Meja extends Connection
         }
     }
 
-    // Fungsi Ubah Data (Update)
-    public function UpdateMeja()
+public function UpdateMeja()
     {
         $sql = "UPDATE meja
                 SET nomor_meja = '$this->nomor_meja',
@@ -100,7 +94,6 @@ class Meja extends Connection
         }
     }
 
-    // Fungsi Hapus Data (Delete)
     public function DeleteMeja()
     {
         $sql = "DELETE FROM meja WHERE id_meja = '$this->id_meja'";

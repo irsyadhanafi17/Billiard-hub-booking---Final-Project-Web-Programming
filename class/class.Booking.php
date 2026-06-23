@@ -4,7 +4,6 @@ require_once(__DIR__ . '/class.Connection.php');
 class Booking extends Connection
 {
     private $booking_id, $userid, $table_id, $booking_date, $start_time, $duration_hours, $total_price, $payment_status;
-    // Atribut bantuan untuk menampung hasil query SQL INNER JOIN (Pola W12)
     private $customer_name, $outlet_name, $table_number, $class_type;
 
     public $hasil = false;
@@ -24,12 +23,10 @@ class Booking extends Connection
 
     public function AddBooking()
     {
-        // Ambil harga asli meja per jam dari database untuk proteksi manipulasi harga di sisi clients
         $queryPrice = "SELECT price_per_hour FROM billiard_tables WHERE table_id = '$this->table_id'";
         $res = mysqli_query($this->connection, $queryPrice);
         $tableData = mysqli_fetch_assoc($res);
 
-        // Hitung total harga final berdasarkan durasi dan harga asli meja
         $this->total_price = $tableData['price_per_hour'] * $this->duration_hours;
 
         $sql = "INSERT INTO bookings (userid, table_id, booking_date, start_time, duration_hours, total_price)
@@ -40,7 +37,6 @@ class Booking extends Connection
 
     public function SelectAllBookings()
     {
-        // Pola W12: Wajib INNER JOIN berlapis untuk menarik string deskriptif ke tabel list view
         $sql = "SELECT b.*, u.name as customer_name, o.outlet_name, t.table_number, t.class_type
                 FROM bookings b
                 INNER JOIN users u ON b.userid = u.userid
@@ -70,7 +66,6 @@ class Booking extends Connection
 
     public function SelectCustomerBookings($userid)
     {
-        // Pola W12: INNER JOIN untuk menarik nama outlet dan nomor meja berdasarkan ID User spesifik
         $sql = "SELECT b.*, o.outlet_name, t.table_number, t.class_type
             FROM bookings b
             INNER JOIN billiard_tables t ON b.table_id = t.table_id

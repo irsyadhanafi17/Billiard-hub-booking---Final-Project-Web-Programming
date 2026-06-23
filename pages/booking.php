@@ -1,7 +1,4 @@
 <?php
-// pages/booking.php
-
-// W13: Proteksi ganda, pastikan yang akses beneran customer yang sah
 if (!isset($_SESSION["role"]) || $_SESSION["role"] != 'customer') {
     echo "<script>alert('Akses ilegal!');</script>";
     echo "<script>window.location='index.php?p=login';</script>";
@@ -20,15 +17,13 @@ $arrOutlet = $objOutlet->SelectAllOutlet();
 $arrTable = [];
 $selected_outlet = '';
 
-// Logika dinamis: Jika cabang outlet dipilih, load meja spesifik cabang tersebut (Pola W12)
 if (isset($_POST['outlet_id']) && $_POST['outlet_id'] != '') {
     $selected_outlet = $_POST['outlet_id'];
     $arrTable = $objTable->SelectTablesByOutlet($selected_outlet);
 }
 
-// Proses ketika tombol 'Book Now' ditekan (Transaksi INSERT - Pola W12)
 if (isset($_POST['btnSubmit'])) {
-    $objBooking->userid = $_SESSION['userid']; // Diambil otomatis dari session login (W13)
+    $objBooking->userid = $_SESSION['userid']; 
     $objBooking->table_id = $_POST['table_id'];
     $objBooking->booking_date = $_POST['booking_date'];
     $objBooking->start_time = $_POST['start_time'];

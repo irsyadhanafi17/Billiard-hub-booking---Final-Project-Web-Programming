@@ -1,10 +1,8 @@
 <?php
-// dashboardadmin.php
 if (!isset($_SESSION)) {
     session_start();
 }
 
-// W13: Proteksi Otorisasi Admin ketat
 require_once('pages/authorization_admin.php');
 require_once("inc.koneksi.php");
 ?>
@@ -37,7 +35,6 @@ require_once("inc.koneksi.php");
 
     <div class="container">
         <?php
-        // W8: Dynamic Page Routing khusus Admin
         $page = isset($_GET['p']) ? $_GET['p'] : 'home';
         switch ($page) {
             case 'bookinglist':

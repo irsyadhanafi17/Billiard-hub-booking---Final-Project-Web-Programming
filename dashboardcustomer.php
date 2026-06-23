@@ -3,7 +3,6 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
-// Proteksi Otorisasi Customer (W13)
 if (!isset($_SESSION["role"]) || $_SESSION["role"] != 'customer') {
     echo "<script>alert('Akses Ditolak! Harap login sebagai member.');</script>";
     echo '<script>window.location="index.php?p=login";</script>';
@@ -40,14 +39,13 @@ require_once("inc.koneksi.php");
 
     <div class="container">
         <?php
-        // Routing internal khusus halaman customer (W8)
         $page = isset($_GET['p']) ? $_GET['p'] : 'home';
         switch ($page) {
             case 'booking':
                 include('pages/booking.php');
                 break;
             case 'mybookings':
-                include('pages/mybookings.php'); // File baru yang akan kita buat di bawah
+                include('pages/mybookings.php');
                 break;
             default:
                 echo "<h3>Selamat Datang, " . $_SESSION['name'] . "!</h3>";

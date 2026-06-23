@@ -21,8 +21,7 @@ class BilliardTable extends Connection
         if (property_exists($this, $attribute))
             $this->$attribute = $value;
     }
-
-    // Fungsi krusial: Mengambil meja HANYA yang ada di outlet pilihan user (Pola W12)
+    
     public function SelectTablesByOutlet($selected_outlet)
     {
         $sql = "SELECT * FROM billiard_tables WHERE outlet_id = '$selected_outlet' AND status = 'Available'";

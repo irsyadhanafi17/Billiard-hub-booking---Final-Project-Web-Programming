@@ -1,9 +1,7 @@
 <?php
-// pages/bookinglist.php
 require_once('./class/class.Booking.php');
 $objBooking = new Booking();
 
-// Logika Proses Aksi ketika Admin menekan tombol "Konfirmasi Lunas" (W12)
 if (isset($_GET['action']) && $_GET['action'] == 'approve') {
     $id_to_approve = $_GET['id'];
     $objBooking->ApproveBooking($id_to_approve);
@@ -12,7 +10,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'approve') {
     echo '<script>window.location = "dashboardadmin.php?p=bookinglist";</script>';
 }
 
-// Load seluruh transaksi booking masuk (W12)
 $allBookings = $objBooking->SelectAllBookings();
 ?>
 
@@ -57,7 +54,7 @@ $allBookings = $objBooking->SelectAllBookings();
                             <a class="btn btn-success btn-xs" href="dashboardadmin.php?p=bookinglist&action=approve&id=' . $data->booking_id . '" onclick="return confirm(\'Konfirmasi pelunasan untuk transaksi ini?\')">
                                 <span class="glyphicon glyphicon-ok"></span> Set Lunas
                             </a>
-                          </td>';
+                            </td>';
                 } else {
                     echo '<td><span class="label label-success">Paid</span></td>';
                     echo '<td><button class="btn btn-default btn-xs" disabled><span class="glyphicon glyphicon-lock"></span> Locked</button></td>';

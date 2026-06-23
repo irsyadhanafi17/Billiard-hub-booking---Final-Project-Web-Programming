@@ -1,9 +1,7 @@
 <?php
-// pages/mybookings.php
 require_once('./class/class.Booking.php');
 $objBooking = new Booking();
 
-// Ambil semua riwayat booking khusus user yang login
 $arrayResult = $objBooking->SelectCustomerBookings($_SESSION['userid']);
 ?>
 
@@ -37,7 +35,6 @@ $arrayResult = $objBooking->SelectCustomerBookings($_SESSION['userid']);
                 echo '<td>' . $data->duration_hours . ' Jam</td>';
                 echo '<td>Rp ' . number_format($data->total_price, 0, ',', '.') . '</td>';
 
-                // Variasi Badge Status Pembayaran (Pola W13)
                 if ($data->payment_status == 'Pending') {
                     echo '<td><span class="label label-warning">Pending</span></td>';
                 } else if ($data->payment_status == 'Paid') {

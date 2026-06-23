@@ -35,9 +35,9 @@ $page = isset($_GET['p']) ? $_GET['p'] : 'home';
             font-family: "Boldonse", system-ui;
             font-weight: 400;
             font-style: normal;
-            src: url("assets/fonts/Boldonse-Regular.woff2") format("woff2"),
-                 url("assets/fonts/Boldonse-Regular.woff") format("woff"),
-                 url("assets/fonts/Boldonse-Regular.ttf") format("truetype");
+            src:url("assets/fonts/Boldonse-Regular.woff2") format("woff2"),
+                url("assets/fonts/Boldonse-Regular.woff") format("woff"),
+                url("assets/fonts/Boldonse-Regular.ttf") format("truetype");
         }
 
         body {

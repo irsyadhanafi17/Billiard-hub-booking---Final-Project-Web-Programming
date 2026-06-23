@@ -19,7 +19,6 @@ class Outlet extends Connection
             $this->$attribute = $value;
     }
 
-    // Fungsi untuk menarik semua cabang ke dropdown form
     public function SelectAllOutlet()
     {
         $sql = "SELECT * FROM outlets ORDER BY outlet_name ASC";
