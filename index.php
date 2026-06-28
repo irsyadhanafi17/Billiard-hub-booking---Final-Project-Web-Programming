@@ -1,913 +1,659 @@
 <?php
-if (!isset($_SESSION)) {
-    session_start(); 
-}
+if (!isset($_SESSION)) { session_start(); }
+$page = isset($_GET['p']) ? $_GET['p'] : 'home';
 
-require_once("inc.koneksi.php");
-
-if (isset($_SESSION["role"])) {
-    if ($_SESSION["role"] == 'customer') {
-        echo '<script>window.location = "dashboardcustomer.php";</script>';
-    } else if ($_SESSION["role"] == 'admin') {
-        echo '<script>window.location = "dashboardadmin.php";</script>';
-    }
+// Handle login & register SEBELUM output HTML apapun
+if ($page === 'login') {
+    include('pages/login.php');
     exit();
 }
-
-$page = isset($_GET['p']) ? $_GET['p'] : 'home';
+if ($page === 'register') {
+    include('pages/register.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Afterhour - Premium Billiard & Lounge</title>
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <link class="sheet" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Boldonse&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Afterhour — Billiard & Lounge Premium</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Boldonse&display=swap" rel="stylesheet">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
-        @font-face {
-            font-family: "Boldonse", system-ui;
-            font-weight: 400;
-            font-style: normal;
-            src:url("assets/fonts/Boldonse-Regular.woff2") format("woff2"),
-                url("assets/fonts/Boldonse-Regular.woff") format("woff"),
-                url("assets/fonts/Boldonse-Regular.ttf") format("truetype");
-        }
-
+        /* ── RESET & BASE ───────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
         body {
-            background-color: #070103 !important;
-            margin: 0;
-            padding: 0;
+            background: #070103;
+            font-family: 'DM Sans', sans-serif;
+            color: #EDE8DC;
             overflow-x: hidden;
-            font-family: 'DM Sans', 'Inter', sans-serif !important;
-            font-weight: 400;
-            font-size: 15px; 
-            -webkit-font-smoothing: antialiased;
         }
+        img { max-width: 100%; display: block; }
 
-        h1, h2, h3, h4, h5, h6, .font-horizon {
-            font-family: 'Boldonse', 'Impact', 'Arial Narrow', sans-serif !important;
-            font-weight: 900 !important; 
-            text-transform: uppercase !important;
-            letter-spacing: 0.04em !important; 
-            line-height: 1.15 !important;    
-            color: #ffffff;
+        /* ── NAVBAR ─────────────────────────────────────── */
+        .ah-navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+            padding: 18px 48px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(7,1,3,0.95) 0%, rgba(7,1,3,0.6) 60%, transparent 100%);
+            backdrop-filter: blur(6px);
+            transition: background 0.4s;
         }
-
-        .section-title-editorial {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 700 !important; 
-            letter-spacing: -0.01em !important;
-            text-transform: none !important;
-            font-size: 48px !important;
-        }
-
-        .section-desc-editorial, .hero-subtitle-text, .advantage-desc, .membership-block-bg p {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 400 !important;
-            color: #EDE8DC !important;
-            letter-spacing: 0px !important;
-            line-height: 1.7 !important;
-        }
-
-        .navbar-landing-public {
-            position: fixed !important;
-            width: 100% !important;
-            top: 0;
-            left: 0;
-            border: none !important;
-            margin: 0 !important;
-            min-height: 90px !important;
-            z-index: 99999 !important;
-            background-color: transparent !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.25) !important; 
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-        }
-
-        .navbar-landing-public.nav-scrolled {
-            min-height: 70px !important;
-            background-color: #000000 !important;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.9) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
-        }
-
-        .navbar-landing-public .container,
-        .navbar-landing-public .container-fluid {
-            position: relative !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: 90px !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            transition: all 0.4s ease !important;
-        }
-        .navbar-landing-public.nav-scrolled .container,
-        .navbar-landing-public.nav-scrolled .container-fluid {
-            height: 70px !important;
-        }
-
-        .navbar-landing-public .navbar-header {
-            position: absolute !important;
-            top: 50% !important;
-            left: 40px !important; 
-            transform: translateY(-50%) !important;
-            float: none !important;
-            margin: 0 !important;
-        }
-
-        .navbar-landing-public .navbar-brand {
-            padding: 0 !important;
-            margin: 0 !important;
-            display: block !important;
-            height: auto !important;
-        }
-
-        .navbar-landing-public .navbar-brand .logo-img {
-            height: 45px;
-            width: auto;
-            object-fit: contain;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-landing-public .navbar-nav.navbar-right {
-            position: absolute !important;
-            top: 50% !important;
-            right: 40px !important; 
-            transform: translateY(-50%) !important;
-            float: none !important;
-            margin: 0 !important;
-            display: block !important;
-        }
-
-        .navbar-landing-public .navbar-nav > li {
-            float: none !important;
-            display: inline-block !important;
-        }
-
-        .navbar-landing-public .navbar-nav > li > a {
-            color: #ffffff !important;
-            font-family: 'DM Sans', sans-serif !important; 
-            font-weight: 700 !important;
-            font-size: 15px !important;   
-            letter-spacing: 0.02em !important;
-            text-transform: uppercase;
-            padding: 8px 20px !important;
-            border: 1px solid transparent !important;
-            border-radius: 30px !important; 
-            background-color: transparent !important;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-landing-public.nav-scrolled .navbar-nav > li > a {
-            color: #61caee !important; 
-        }
-
-        .navbar-landing-public .navbar-nav > li > a:hover {
-            color: #ffffff !important;
-            background-color: #e81b7b !important;
-            border-color: #e81b7b !important;
-            box-shadow: 0 0 0px #000000;
-        }
-
-        @media (max-width: 991px) {
-            .navbar-landing-public .navbar-header { left: 20px !important; }
-            .navbar-landing-public .navbar-nav.navbar-right { right: 20px !important; }
-        }
-
-        .main-landing-wrapper {
-            background-color: #050505;
-            padding-top: 0px;
-        }
-
-        .hero-premium-section {
-            position: relative;
-            background: linear-gradient(rgba(0,0,0,0.2), #000000), url('assets/index/Afterhour Hero Image.png') no-repeat center center;
-            background-size: cover;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 0 80px;
-        }
-        .hero-premium-section .hero-title-graphic {
-            display: block;
-            margin-left: 0 !important;   
-            margin-right: auto;
-            margin-bottom: 35px;         
-            max-width: 650px; 
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-        }
-        .hero-premium-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(160deg, rgba(0, 0, 0, 0.5) 0%, rgba(47, 6, 24, 0.4) 50%, #000000 100%);
-            z-index: 1;
-        }
-        .hero-content-inner {
-            position: relative;
-            z-index: 2;
-            max-width: 750px;
-            margin-top: 40px;
-        }
-        .hero-content-inner-leftaligned {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;    
-            justify-content: center;
-            text-align: left;           
-            width: 100%;
-            max-width: 750px;
-            margin-left: 15px;             
-        }
-        .hero-action-buttons-leftaligned {
-            display: flex;
-            gap: 15px;                  
-            justify-content: flex-start; 
-            width: 100%;
-            flex-wrap: wrap;
-            margin-left: 50px;             
-        }
-        .hero-premium-section .btn-gold-action, 
-        .hero-premium-section .btn-outline-action {
-            flex: 0 0 auto;
-            min-width: 200px;
-            justify-content: center;
-            height: 52px;
-        }
-
-        .hero-title-graphic {
-            display: block;
-            margin-bottom: 30px;
-            max-width: 650px; 
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-        }
-        @media (max-width: 768px) {
-        .hero-premium-section { padding: 40px 20px !important; }
-        .hero-content-inner-leftaligned { align-items: flex-start; }
-        .hero-action-buttons-leftaligned { gap: 12px; }
-        .hero-premium-section .btn-gold-action, 
-        .hero-premium-section .btn-outline-action { min-width: 100%; } 
-        }
-
-        .btn-gold-action {
-            background: #8bd100 !important; 
-            color: #000000 !important;
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-weight: 700;
-            font-size: 14px;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            height: 52px;
-            padding: 0 35px;
-            display: inline-flex;
-            align-items: center;
-            border-radius: 30px !important; 
-            border: none;
-            box-shadow: 0 4px 25px rgba(209, 253, 121, 0.25);
+        .ah-navbar.scrolled { background: rgba(7,1,3,0.97); border-bottom: 1px solid #2f0618; }
+        .nav-logo {
+            font-family: 'Boldonse', sans-serif;
+            font-size: 22px;
+            color: #8bd100;
+            letter-spacing: 0.08em;
             text-decoration: none;
-            transition: all 0.3s ease;
         }
-        .btn-gold-action:hover {
-            background: #ffffff !important;
-            box-shadow: 0 0 15px #d1fd796f;
-            text-decoration: none;
-            transform: translateY(-2px);
+        .nav-logo span { color: #fff; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links a {
+            color: #8A7E6C; font-size: 13px; font-weight: 500;
+            text-decoration: none; letter-spacing: 0.04em;
+            transition: color 0.2s;
         }
-        .btn-outline-action {
-            background: transparent;
-            color: #ffffff !important;
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            border: 2px solid #2f0618 !important;
-            height: 52px;
-            padding: 0 30px;
-            display: inline-flex;
-            align-items: center;
-            border-radius: 30px !important; 
-            text-decoration: none;
+        .nav-links a:hover { color: #fff; }
+        .nav-cta-group { display: flex; align-items: center; gap: 12px; }
+        .btn-nav-login {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #EDE8DC; font-size: 12px; font-weight: 600;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            text-decoration: none; padding: 8px 16px;
+            border: 1px solid #3f0828; border-radius: 8px;
             transition: all 0.3s;
         }
-        .btn-outline-action:hover {
-            border-color: #a3ee5989 !important;
-            color: #a3ee59 !important;
-            text-decoration: none;
+        .btn-nav-login:hover { border-color: #8bd100; color: #8bd100; text-decoration: none; }
+        .btn-nav-book {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #8bd100; color: #000; font-size: 12px; font-weight: 700;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            text-decoration: none; padding: 9px 20px; border-radius: 30px;
+            transition: all 0.3s;
         }
+        .btn-nav-book:hover { background: #fff; transform: translateY(-1px); text-decoration: none; color: #000; }
 
-        .section-padding {
-            padding: 120px 80px;
-        }
-
-        .stats-counter-wrapper {
-            padding: 10px 40px 0px;
-            background-color: #0c0105;
-        }
-
-        .stats-premium-box {
-            background-color: #2f0618 !important;
-            border: 1px solid #2f0618 !important;
-            border-radius: 32px !important;
-            padding: 40px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-        .stats-item-block {
-            flex: 1;
-            text-align: left;
-            padding-left: 40px;
-        }
-
-        .stats-item-block:not(:first-child) {
-            border-left: 2px solid rgba(232, 27, 123, 0.3) !important;
-            padding-left: 35px;
-        }
-
-        .stats-huge-number {
-            font-family: 'Boldonse', sans-serif !important;
-            font-weight: 900 !important;
-            font-size: 45px !important;
-            color: #ffffff;
-            line-height: 1.0 !important;
-            margin-bottom: 20px;
-            letter-spacing: 0.02em !important;
-        }
-
-        .stats-label-text {
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-weight: 700 !important;
-            font-size: 13px;
-            color: #e81b7b !important;
-            text-transform: uppercase;
-            letter-spacing: 2px !important;
-        }
-
-        @media (max-width: 991px) {
-            .stats-counter-wrapper { padding: 40px 20px 0px; }
-            .stats-premium-box { flex-direction: column; padding: 40px 30px; gap: 40px; }
-            .stats-item-block { text-align: center; padding-left: 0 !important; width: 100%; }
-            .stats-item-block:not(:first-child) { border-left: none !important; border-top: 1px solid rgba(232, 27, 123, 0.2) !important; padding-top: 30px; }
-            .stats-huge-number { font-size: 46px !important; }
-        }
-        .locations-sidebar-bg {
-            background-image: url('assets/index/Afterhour Main Outline.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: bottom right;
-            position: sticky;
-        }
-
-        .outlets-container-bg {
-            background-image: url('assets/index/Afterhour Main Outline.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center right;
-            position: sticky;
-        }
-        
-        .outlet-card-premium {
-            background: #1f0410 !important;
-            backdrop-filter: blur(15px);
-            border: 0.1px solid #2f0618 !important;
-            border-radius: 24px !important; 
-            overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.4s ease;
-        }
-        
-        .outlet-card-premium:hover {
-            transform: translateY(-10px);
-            border-color: #2f0618 !important;
-            box-shadow: 0 1px 35px rgba(153, 10, 74, 0.47) !important;
-        }
-        
-        .outlet-image-holder {
-            background-color: #111;
-            background-size: cover;
-            background-position: center;
-            border-bottom: 1px solid #2f0618;
-        }
-        
-        .outlet-body-inner {
-            padding: 25px;
-            background: transparent;
-        }
-        
-        .outlet-meta {
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-weight: 300 !important; 
-            font-size: 11px;
-            color: #84003b !important;
-            letter-spacing: 3px !important; 
-            margin-bottom: 8px;
-            display: block;
-        }
-        
-        .outlet-name-text {
-            font-family: 'Boldonse', sans-serif !important;
-            font-weight: 700 !important; 
-            font-size: 17px !important;
-            color: #ffffff !important;
-            margin: 0 0 10px;
-            text-transform: none !important;
-            character-spacing: -1px !important;
-        }
-        
-        .outlet-price-info {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 400 !important; 
-            font-size: 12px;
-            color: #8A7E6C;
-        }
-
-        @media (min-width: 1200px) {
-            .row-flex-responsive { display: flex !important; align-items: center !important; flex-wrap: wrap !important; }
-            
-            .horizontal-scroll-container {
-                display: flex !important; 
-                flex-wrap: nowrap !important;
-                overflow-x: auto !important; 
-                overflow-y: hidden !important;
-                gap: 28px; 
-                padding-top: 15px !important; 
-                padding-bottom: 30px !important; 
-                scroll-behavior: smooth; 
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none !important; 
-                -ms-overflow-style: none !important;
-            }
-            .horizontal-scroll-container::-webkit-scrollbar { display: none !important; }
-            .outlet-card-premium { flex: 0 0 290px !important; }
-            .outlet-image-holder { height: 280px; }
-        }
-
-        @media (max-width: 991px) {
-            .navbar-landing-public { padding: 0 20px !important; }
-            .navbar-landing-public.nav-scrolled { padding: 0 20px !important; }
-            .navbar-landing-public .navbar-brand .logo-img { height: 35px; }
-            .navbar-landing-public .navbar-nav > li > a { font-size: 11px !important; padding: 6px 12px !important; }
-            .hero-premium-section { padding: 40px 20px !important; }
-            .hero-title-graphic { max-width: 320px; margin-bottom: 25px; }
-            .outlet-image-holder { height: 240px !important; }
-            .section-padding { padding: 60px 20px !important; }
-            .membership-block-bg { padding: 60px 20px !important; }
-            .horizontal-scroll-container { padding-top: 10px !important; padding-bottom: 15px !important; }
-            .courtside-footer-public { padding: 60px 20px 30px !important; }
-            .footer-col-right { margin-top: 40px; }
-            .editorial-courtside-box { padding: 40px 30px !important; }
-            .editorial-courtside-box .row { gap: 20px; }
-        }
-
-        .membership-block-bg {
-            background: linear-gradient(180deg, #050505 0%, #160a0e 50%, #000000 100%);
-            padding: 120px 80px;
-        }
-        
-        .membership-block-bg .section-title-editorial {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 700 !important;
-            color: #ffffff;
-        }
-
-        .premium-price-box {
-            background: rgba(0, 0, 0, 0.5) !important;
-            backdrop-filter: blur(20px);
-            border: 2px solid #160a0e !important;
-            box-shadow: 0 0 40px rgba(156, 14, 78, 0.2);
-            border-radius: 24px !important; 
-            padding: 50px;
-            text-align: center;
-            max-width: 550px; 
-            margin: 0 auto;  
-        }
-
-        .premium-price-box .card-title {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 700 !important;
-            color: #ffffff !important;
-            letter-spacing: 0px !important;
-        }
-
-        .benefit-list { text-align: left; margin: 25px 0; padding-left: 0; list-style: none; }
-        
-        .benefit-list li {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 400 !important;
-            font-size: 15px;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(240, 22, 121, 0.12) !important;
-            color: #EDE8DC;
-        }
-        .benefit-list li span {
-            color: #61caee !important;
-            margin-right: 12px;
-        }
-
-        .advantage-row { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(240, 22, 121, 0.1); }
-        
-        .advantage-title { 
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 700 !important;
-            color: #61caee !important; 
-            font-size: 22px !important; 
-            text-transform: none !important;
-            letter-spacing: 0px !important;
-        }
-
-        .editorial-courtside-wrapper {
-            padding: 20px 40px 15px;
-            background-color: #050505;
-        }
-
-        .editorial-courtside-box {
-            background-color: #e81b7b !important;
-            border-radius: 32px !important;
-            padding: 40px;
-            width: 100%;
-        }
-
-        .editorial-courtside-title {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 700 !important;
-            font-size: 42px !important;
-            color: #ffffff !important;
-            letter-spacing: -0.02em !important;
-            text-transform: none !important;
-            margin: 7px 30px 10px 0 !important;
-            line-height: 1.2 !important;
-            width: 100%;
-        }
-
-        .editorial-list-container {
-            list-style: none;
-            padding-left: 0;
-            margin: 0;
-        }
-
-        .editorial-list-item {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 500 !important;
-            font-size: 20px;
-            color: #ffffff !important;
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-
-        .editorial-list-item span {
-            font-size: 20px;
-            color: #ffffff !important;
-            margin-right: 14px;
-            margin-top: 5px;
-            flex-shrink: 0;
-        }
-
-        @media (max-width: 991px) {
-            .editorial-courtside-wrapper { padding: 40px 20px 60px; }
-            .editorial-courtside-box { padding: 40px 30px; }
-            .editorial-courtside-title { font-size: 32px !important; margin-bottom: 35px !important; }
-            .editorial-column-right { margin-top: 0px; }
-            .editorial-list-item { margin-bottom: 20px; font-size: 15px; }
-        }
-
-        .courtside-footer-public {
-            background-color: #000000;
-            background-image: url('assets/index/Red Outline.png');
-            background-repeat: no-repeat !important;
-            background-size: 65% auto !important;
-            background-position: 120% center !important;
-            border-top: 1px solid #050505;
-            padding: 100px 80px 40px;
+        /* ── HERO ───────────────────────────────────────── */
+        .hero {
             position: relative;
+            height: 100vh; min-height: 600px;
+            display: flex; align-items: flex-end;
+            overflow: hidden;
         }
-
-        .footer-brand-img {
-            height: 45px;
-            width: auto;
-            object-fit: contain;
+        .hero-slides { position: absolute; inset: 0; }
+        .hero-slide {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 1.4s ease;
+        }
+        .hero-slide.active { opacity: 1; }
+        .hero-slide::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(7,1,3,0.95) 0%, rgba(7,1,3,0.5) 40%, rgba(7,1,3,0.15) 100%);
+        }
+        .hero-content {
+            position: relative; z-index: 2;
+            padding: 0 72px 80px;
+            max-width: 800px;
+        }
+        .hero-eyebrow {
+            font-size: 11px; font-weight: 600; letter-spacing: 4px;
+            text-transform: uppercase; color: #8bd100; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .hero-eyebrow::before {
+            content: ''; display: block; width: 28px; height: 1px; background: #8bd100;
+        }
+        .hero-title {
+            font-family: 'Boldonse', sans-serif;
+            font-size: clamp(42px, 6vw, 74px);
+            line-height: 1.0;
+            color: #fff;
             margin-bottom: 20px;
+            letter-spacing: -0.01em;
         }
-
-        .footer-headline-nav {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 700;
-            font-size: 14px;
-            color: #ffffff;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .hero-title .accent { color: #8bd100; }
+        .hero-sub {
+            font-size: 16px; color: #8A7E6C; line-height: 1.7;
+            max-width: 520px; margin-bottom: 36px;
         }
-
-        .footer-link-item {
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 400;
-            font-size: 14px;
-            color: #8A7E6C;
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            text-decoration: none !important;
-            line-height: 1.6;
-            transition: color 0.3s;
+        .hero-cta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .btn-hero-book {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: #8bd100; color: #000; font-weight: 700; font-size: 14px;
+            letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none;
+            padding: 16px 36px; border-radius: 40px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 32px rgba(139,209,0,0.35);
         }
-
-        .footer-link-item:hover {
-            color: #e81b7b;
+        .btn-hero-book:hover { background: #fff; transform: translateY(-3px); text-decoration: none; color: #000; }
+        .btn-hero-member {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #EDE8DC; font-size: 14px; font-weight: 600;
+            text-decoration: none; letter-spacing: 0.04em;
+            padding: 16px 28px; border: 1px solid #3f0828; border-radius: 40px;
+            transition: all 0.3s;
         }
-
-        .footer-link-item span {
-            margin-top: 3px;
-            margin-right: 12px;
-            font-size: 12px;
-            color: #e81b7b;
+        .btn-hero-member:hover { border-color: #8A7E6C; color: #fff; text-decoration: none; }
+        /* Hero dots */
+        .hero-dots {
+            position: absolute; bottom: 32px; right: 72px; z-index: 3;
+            display: flex; gap: 8px;
         }
+        .hdot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #3f0828; cursor: pointer; transition: all 0.3s;
+        }
+        .hdot.active { background: #8bd100; width: 20px; border-radius: 3px; }
 
-        .footer-bottom-copyright {
-            border-top: 0px;
-            margin-top: 50px;
-            padding-top: 30px;
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 400;
-            font-size: 13px;
-            color: #716455;
+        /* ── SECTION GENERIC ────────────────────────────── */
+        .section { padding: 88px 0; }
+        .section-label {
+            font-size: 11px; font-weight: 600; letter-spacing: 4px;
+            text-transform: uppercase; color: #8bd100;
+            display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+        }
+        .section-label::before { content:''; display:block; width:24px; height:1px; background:#8bd100; }
+        .section-title {
+            font-family: 'Boldonse', sans-serif;
+            font-size: clamp(28px, 4vw, 46px);
+            color: #fff; line-height: 1.1; margin-bottom: 16px;
+        }
+        .section-desc { font-size: 15px; color: #8A7E6C; line-height: 1.7; max-width: 540px; }
+
+        /* ── PHOTO GRID ─────────────────────────────────── */
+        .photo-grid-section { background: #070103; padding: 80px 0; }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: 240px 240px;
+            gap: 8px;
+        }
+        .pg-item {
+            overflow: hidden; border-radius: 8px; position: relative; cursor: pointer;
+            transition: transform 0.4s;
+        }
+        .pg-item:hover { transform: scale(1.02); z-index: 2; }
+        .pg-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
+        .pg-item:hover img { transform: scale(1.08); }
+        .pg-item.span2 { grid-column: span 2; }
+        .pg-item.span-row2 { grid-row: span 2; }
+        .pg-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(7,1,3,0.7) 0%, transparent 50%);
+            opacity: 0; transition: opacity 0.3s;
+            display: flex; align-items: flex-end; padding: 16px;
+        }
+        .pg-item:hover .pg-overlay { opacity: 1; }
+        .pg-overlay span { color: #8bd100; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* ── KELAS MEJA ─────────────────────────────────── */
+        .class-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 40px; }
+        .class-card {
+            background: #1f0410; border: 1px solid #2f0618; border-radius: 16px;
+            overflow: hidden; transition: all 0.3s;
+        }
+        .class-card:hover { border-color: #8bd100; transform: translateY(-4px); }
+        .class-card-img { height: 200px; overflow: hidden; }
+        .class-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .class-card:hover .class-card-img img { transform: scale(1.08); }
+        .class-card-body { padding: 22px; }
+        .class-card-tag {
+            font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 10px; display: inline-block; padding: 4px 10px; border-radius: 4px;
+        }
+        .tag-regular { background: #1a3a2a; color: #5acc8a; }
+        .tag-vip { background: #1a1a3a; color: #8a8aff; }
+        .tag-vvip { background: #3a1a00; color: #ffaa00; }
+        .class-card-name { font-family:'Boldonse',sans-serif; font-size:22px; color:#fff; margin-bottom:8px; }
+        .class-card-desc { font-size:13px; color:#8A7E6C; line-height:1.6; margin-bottom:16px; }
+        .class-card-price { font-family:'Boldonse',sans-serif; font-size:24px; color:#8bd100; }
+        .class-card-price span { font-family:'DM Sans',sans-serif; font-size:13px; color:#555; font-weight:400; }
+
+        /* ── OUTLET LIST ────────────────────────────────── */
+        .outlet-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:40px; }
+        .outlet-card {
+            border-radius:14px; overflow:hidden; position:relative;
+            height: 260px; cursor:pointer; transition:transform 0.3s;
+        }
+        .outlet-card:hover { transform:translateY(-4px); }
+        .outlet-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .outlet-card:hover img { transform:scale(1.06); }
+        .outlet-card-overlay {
+            position:absolute; inset:0;
+            background:linear-gradient(to top, rgba(7,1,3,0.92) 0%, rgba(7,1,3,0.3) 60%, transparent 100%);
+            display:flex; flex-direction:column; justify-content:flex-end; padding:22px;
+        }
+        .outlet-card-name { font-family:'Boldonse',sans-serif; font-size:18px; color:#fff; margin-bottom:4px; }
+        .outlet-card-loc { font-size:12px; color:#8A7E6C; display:flex; align-items:center; gap:6px; }
+        .outlet-card-loc .glyphicon { color:#e81b7b; font-size:11px; }
+
+        /* ── PROMO STRIP ────────────────────────────────── */
+        .promo-section { background:#0d0208; border-top:1px solid #2f0618; border-bottom:1px solid #2f0618; padding:72px 0; }
+        .promo-inner { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
+        .promo-cards { display:flex; flex-direction:column; gap:14px; }
+        .promo-mini {
+            background:#1f0410; border:1px solid #2f0618; border-radius:12px;
+            padding:18px; display:flex; align-items:center; gap:16px;
+            transition:border-color 0.3s;
+        }
+        .promo-mini:hover { border-color:#8bd100; }
+        .promo-mini .pm-pct {
+            min-width:70px; height:70px; background:#0d1a00; border:2px solid #8bd100;
+            border-radius:10px; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; flex-shrink:0;
+        }
+        .pm-pct .pn { font-family:'Boldonse',sans-serif; font-size:22px; color:#8bd100; line-height:1; }
+        .pm-pct .pl { font-size:8px; color:#8bd100; letter-spacing:1px; text-transform:uppercase; }
+        .promo-mini h5 { color:#fff; font-weight:700; font-size:15px; margin:0 0 4px; }
+        .promo-mini p { color:#8A7E6C; font-size:12px; margin:0; line-height:1.5; }
+
+        /* ── STATS BAR ──────────────────────────────────── */
+        .stats-bar {
+            display:grid; grid-template-columns:repeat(4,1fr);
+            gap:0; border:1px solid #2f0618; border-radius:14px; overflow:hidden;
+            margin-top:60px;
+        }
+        .stat-item {
+            padding:28px 24px; text-align:center;
+            border-right:1px solid #2f0618;
+            background:#1f0410;
+        }
+        .stat-item:last-child { border-right:none; }
+        .stat-num { font-family:'Boldonse',sans-serif; font-size:36px; color:#8bd100; line-height:1; margin-bottom:6px; }
+        .stat-lbl { font-size:12px; color:#8A7E6C; letter-spacing:1px; text-transform:uppercase; }
+
+        /* ── CTA BANNER ─────────────────────────────────── */
+        .cta-section {
+            position:relative; overflow:hidden;
+            padding:100px 0; text-align:center;
+        }
+        .cta-bg {
+            position:absolute; inset:0;
+            background-image:url('assets/stocks/Afterhour (2).png');
+            background-size:cover; background-position:center;
+            filter:brightness(0.2);
+        }
+        .cta-content { position:relative; z-index:2; }
+        .cta-title { font-family:'Boldonse',sans-serif; font-size:clamp(28px,5vw,56px); color:#fff; margin-bottom:14px; }
+        .cta-sub { font-size:16px; color:#8A7E6C; margin-bottom:36px; }
+
+        /* ── FOOTER ─────────────────────────────────────── */
+        .ah-footer {
+            background:#070103; border-top:1px solid #2f0618;
+            padding:48px 0 28px;
+        }
+        .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr; gap:40px; margin-bottom:40px; }
+        .footer-brand { font-family:'Boldonse',sans-serif; font-size:24px; color:#8bd100; margin-bottom:12px; }
+        .footer-desc { font-size:13px; color:#8A7E6C; line-height:1.7; max-width:280px; }
+        .footer-col h5 { color:#fff; font-weight:700; font-size:13px; letter-spacing:1px; text-transform:uppercase; margin-bottom:16px; }
+        .footer-col a { display:block; color:#8A7E6C; font-size:13px; text-decoration:none; margin-bottom:8px; transition:color 0.2s; }
+        .footer-col a:hover { color:#fff; }
+        .footer-bottom { border-top:1px solid #1a0a12; padding-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+        .footer-copy { font-size:12px; color:#3a3a3a; }
+
+        /* ── UTILITY ─────────────────────────────────────── */
+        .container-xl { max-width:1200px; margin:0 auto; padding:0 48px; }
+        @media(max-width:991px) {
+            .ah-navbar { padding:16px 24px; }
+            .hero-content { padding:0 24px 60px; }
+            .hero-dots { right:24px; }
+            .container-xl { padding:0 24px; }
+            .photo-grid { grid-template-columns:repeat(2,1fr); grid-template-rows:200px 200px 200px; }
+            .pg-item.span-row2 { grid-row:span 1; }
+            .class-cards, .outlet-grid { grid-template-columns:1fr; }
+            .promo-inner { grid-template-columns:1fr; }
+            .stats-bar { grid-template-columns:repeat(2,1fr); }
+            .footer-grid { grid-template-columns:1fr; }
+            .nav-links { display:none; }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-inverse navbar-landing-public" id="mainNavbar">
-        <div class="container-fluid">
-            
-            <div class="navbar-header">
-                <a class="navbar-brand" href="index.php">
-                    <img src="assets/logo/Afterhour.png" alt="Afterhour Logo" class="logo-img">
+
+<!-- ───────────────── NAVBAR ───────────────── -->
+<nav class="ah-navbar" id="mainNav">
+    <a href="index.php" class="nav-logo">AFTER<span>HOUR</span></a>
+    <div class="nav-links">
+        <a href="#gallery">Galeri</a>
+        <a href="#kelas">Kelas Meja</a>
+        <a href="#outlet">Outlet</a>
+        <a href="#promo">Promo</a>
+    </div>
+    <div class="nav-cta-group">
+        <?php if (isset($_SESSION['role'])): ?>
+            <?php if ($_SESSION['role'] === 'admin'): ?>
+                <a href="dashboardadmin.php" class="btn-nav-login">Admin Panel</a>
+            <?php elseif ($_SESSION['role'] === 'manager'): ?>
+                <a href="dashboardmanager.php" class="btn-nav-login">Manager Panel</a>
+            <?php else: ?>
+                <a href="dashboardcustomer.php" class="btn-nav-login">
+                    <span class="glyphicon glyphicon-user"></span> <?= htmlspecialchars($_SESSION['name']) ?>
                 </a>
-            </div>
-            
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="index.php?p=login"><span class="glyphicon glyphicon-user"></span> MASUK</a></li>
-            </ul>
-            
-        </div>
-    </nav>
-    <div class="main-landing-wrapper">
-        <?php
-        switch ($page) {
-            case 'login':
-                include('pages/login.php'); 
-                break;
-                
-            case 'register':
-                include('pages/register.php'); 
-                break;
-                
-            case 'home':
-            default:
-                ?>
-                <div class="hero-premium-section">
-                    <div class="hero-content-inner-leftaligned">
-                        
-                        <img src="assets/index/Reserved For Afterhour.png" alt="Reserved For Afterhour" class="hero-title-graphic">
-                        
-                        <div class="hero-action-buttons-leftaligned">
-                            <a href="index.php?p=login" class="btn-gold-action">BOOKING MEJA!</a>
-                            <a href="#membership" class="btn-outline-action">MEMBERSHIP</a>
-                        </div>
+            <?php endif; ?>
+            <a href="logout.php" class="btn-nav-book">Logout</a>
+        <?php else: ?>
+            <a href="index.php?p=login" class="btn-nav-login">
+                <span class="glyphicon glyphicon-user"></span> MASUK
+            </a>
+            <a href="index.php?p=login" class="btn-nav-book">
+                BOOKING MEJA
+            </a>
+        <?php endif; ?>
+    </div>
+</nav>
 
-                    </div>
-                </div>
-
-                <div class="stats-counter-wrapper container-fluid">
-                    <div class="stats-premium-box">
-                        
-                        <div class="stats-item-block">
-                            <div class="stats-huge-number">30.000+</div>
-                            <div class="stats-label-text">PEMAIN AKTIF</div>
-                        </div>
-
-                        <div class="stats-item-block">
-                            <div class="stats-huge-number">6+</div>
-                            <div class="stats-label-text">LOKASI OUTLET</div>
-                        </div>
-
-                        <div class="stats-item-block">
-                            <div class="stats-huge-number">120+</div>
-                            <div class="stats-label-text">PILIHAN MEJA PREMIUM</div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="section-padding container-fluid">
-                    <div class="row row-flex-responsive">
-                        
-                        <div class="col-md-4 locations-sidebar-bg">
-                            <span class="hero-eyebrow-text" style="font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight:300; color: #f01679; letter-spacing: 3px;">LOKASI OUTLET</span>
-                                <h2 class="section-title-editorial">THE LOCALS HUB.</h2>
-                                <p class="section-desc-editorial">
-                                    Nikmati pengalaman bermain billiard premium dengan meja standar internasional, stik berkualitas tinggi, serta ambience lounge yang BAM eksklusif di 6 lokasi strategis Jakarta.
-                                </p>
-                            <a href="index.php?p=login" class="btn-outline-action" style="margin-left:0; border-color:#f01679; color:#f01679; margin-top:20px;">LIHAT DI MAP</a>
-                        </div>
-                        
-                        <div class="col-md-8">
-                            <div class="horizontal-scroll-container">
-                                
-                                <div class="outlet-card-premium">
-                                    <div class="outlet-image-holder" style="background-image: url('assets/stocks/Afterhour (1).png');"></div>
-                                    <div class="outlet-body-inner">
-                                        <span class="outlet-meta"><span class="glyphicon glyphicon-map-marker"></span> JAKARTA PUSAT</span>
-                                        <h4 class="outlet-name-text">AFTERHOUR CIKINI</h4>
-                                        <div class="outlet-price-info">RR6Q+82 Cikini &middot; <strong style="color:#d1fd79;">PREMIUM</strong></div>
-                                    </div>
-                                </div>
-
-                                <div class="outlet-card-premium">
-                                    <div class="outlet-image-holder" style="background-image: url('assets/stocks/Afterhour (1).png');"></div>
-                                    <div class="outlet-body-inner">
-                                        <span class="outlet-meta"><span class="glyphicon glyphicon-map-marker"></span> JAKARTA PUSAT</span>
-                                        <h4 class="outlet-name-text">AFTERHOUR MENTENG</h4>
-                                        <div class="outlet-price-info">QR8P+4M Menteng Dalam &middot; <strong style="color:#61caee;">VIP LOUNGE</strong></div>
-                                    </div>
-                                </div>
-
-                                <div class="outlet-card-premium">
-                                    <div class="outlet-image-holder" style="background-image: url('assets/stocks/Afterhour (1).png');"></div>
-                                    <div class="outlet-body-inner">
-                                        <span class="outlet-meta"><span class="glyphicon glyphicon-map-marker"></span> JAKARTA UTARA</span>
-                                        <h4 class="outlet-name-text">AFTERHOUR SUNTER</h4>
-                                        <div class="outlet-price-info">VV55+22 Sunter Agung &middot; <strong style="color:#d1fd79;">PREMIUM</strong></div>
-                                    </div>
-                                </div>
-
-                                <div class="outlet-card-premium">
-                                    <div class="outlet-image-holder" style="background-image: url('assets/stocks/Afterhour (1).png');"></div>
-                                    <div class="outlet-body-inner">
-                                        <span class="outlet-meta"><span class="glyphicon glyphicon-map-marker"></span> JAKARTA UTARA</span>
-                                        <h4 class="outlet-name-text">AFTERHOUR PIK</h4>
-                                        <div class="outlet-price-info">VQM4+MH Kapuk Muara, PIK &middot; <strong style="color:#f01679;">VVIP LUX</strong></div>
-                                    </div>
-                                </div>
-
-                                <div class="outlet-card-premium">
-                                    <div class="outlet-image-holder" style="background-image: url('assets/stocks/Afterhour (1).png');"></div>
-                                    <div class="outlet-body-inner">
-                                        <span class="outlet-meta"><span class="glyphicon glyphicon-map-marker"></span> JAKARTA SELATAN</span>
-                                        <h4 class="outlet-name-text">AFTERHOUR POINS</h4>
-                                        <div class="outlet-price-info">PQ6H+2F Lebak Bulus &middot; <strong style="color:#61caee;">VIP LOUNGE</strong></div>
-                                    </div>
-                                </div>
-
-                                <div class="outlet-card-premium">
-                                    <div class="outlet-image-holder" style="background-image: url('assets/stocks/Afterhour (1).png');"></div>
-                                    <div class="outlet-body-inner">
-                                        <span class="outlet-meta"><span class="glyphicon glyphicon-map-marker"></span> JAKARTA BARAT</span>
-                                        <h4 class="outlet-name-text">M BILLIARDS</h4>
-                                        <div class="outlet-price-info">QR52+5V Melawai, Blok M &middot; <strong style="color:#d1fd79;">PREMIUM</strong></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="editorial-courtside-wrapper container-fluid">
-                    <div class="editorial-courtside-box">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2 class="editorial-courtside-title">What can you do on Afterhour?</h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <ul class="editorial-list-container">
-                                    <li class="editorial-list-item">
-                                        <span class="glyphicon glyphicon-ok-sign"></span> Secure international-standard tables in just a few taps
-                                    </li>
-                                    <li class="editorial-list-item">
-                                        <span class="glyphicon glyphicon-ok-sign"></span> Reserve private VIP & VVIP spaces for your premium sessions
-                                    </li>
-                                    <li class="editorial-list-item">
-                                        <span class="glyphicon glyphicon-ok-sign"></span> Easily manage your booking history, schedules, and active matches
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6 editorial-column-right">
-                                <ul class="editorial-list-container">
-                                    <li class="editorial-list-item">
-                                        <span class="glyphicon glyphicon-ok-sign"></span> Meet and compete with fellow premium billiard enthusiasts.
-                                    </li>
-                                    <li class="editorial-list-item">
-                                        <span class="glyphicon glyphicon-ok-sign"></span> Register for Afterhour International Championship 2026
-                                    </li>
-                                    <li class="editorial-list-item">
-                                        <span class="glyphicon glyphicon-ok-sign"></span> Stay updated with promos from our Afterhour Lounge!
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="membership" class="membership-block-bg container-fluid">
-                    <div class="row row-flex-responsive">
-                        <div class="col-md-6" style="padding-right: 50px;">
-                            <span class="hero-eyebrow-text" style="font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight:300; color: #d1fd79;">MEMBERSHIP ACCESS</span>
-                            <h2 class="section-title-editorial" style="font-size: 60px !important; line-height: 0.9;">MAIN LEBIH PUAS.<br>BAYAR LEBIH HEMAT.</h2>
-                            <p>Nikmati keuntungan luar biasa bermain biliar tanpa batas serta berbagai macam potongan harga eksklusif F&amp;B dengan mendaftarkan diri Anda ke dalam keanggotaan resmi Afterhour Privilege Member.</p>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="premium-price-box">
-                                <span class="card-eyebrow" style="font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight:300; font-size:12px; letter-spacing:3px; color: #61caee;">[ AFTERHOUR MEMBER ]</span>
-                                <h3 class="card-title" style="font-size: 32px; margin-top:5px;">KEUNTUNGAN MEMBERSHIP</h3>
-                                
-                                <ul class="benefit-list">
-                                    <li><span class="glyphicon glyphicon-triangle-right"></span> Regular Table: Mulai dari Rp 35.000 / Jam</li>
-                                    <li><span class="glyphicon glyphicon-triangle-right"></span> VIP Area: Diskon 10% untuk semua sesi</li>
-                                    <li><span class="glyphicon glyphicon-triangle-right"></span> VVIP Lounge: Diskon 10% untuk kenyamanan ekstra</li>
-                                    <li><span class="glyphicon glyphicon-triangle-right"></span> Food &amp; Beverages: Diskon 10% untuk menu pilihan</li>
-                                </ul>
-                                
-                                <div style="margin: 30px 0;">
-                                    <span style="font-size: 46px; font-weight:700; color:#d1fd79;">Rp 200.000</span>
-                                </div>
-
-                                <a href="index.php?p=login" class="btn-gold-action" style="width:100%; justify-content:center;">AMANKAN SLOT MEMBER-MU!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php
-                break;
-        }
-        ?>
+<!-- ───────────────── HERO SLIDER ───────────── -->
+<section class="hero">
+    <div class="hero-slides" id="heroSlides">
+        <div class="hero-slide active" style="background-image:url('assets/stocks/Afterhour (2).png')"></div>
+        <div class="hero-slide" style="background-image:url('assets/stocks/Afterhour (4).png')"></div>
+        <div class="hero-slide" style="background-image:url('assets/stocks/Afterhour (12).png')"></div>
+        <div class="hero-slide" style="background-image:url('assets/stocks/Afterhour (8).png')"></div>
     </div>
 
-    <footer class="courtside-footer-public container-fluid">
-        <div class="row">
-            <div class="col-md-6">
-                <img src="assets/logo/Afterhour.png" alt="Afterhour Logo" class="footer-brand-img">
-                <p class="footer-brand-subtitle" style="max-width: 400px; line-height: 1.5; color: white">
-                    Esensi olahraga billiard premium berbalut kenyamanan lounge eksklusif. Rasakan pengalaman bermain kelas dunia di setiap sudut ruang kami.
-                </p>
-            </div>
-            <div class="col-md-3 col-sm-6 footer-col-right">
-                <h5 class="footer-headline-nav">Visit Us</h5>
-                <div class="footer-link-item">
-                    <span class="glyphicon glyphicon-map-marker"></span>
-                    Menara 165, Lantai 18, Jl. TB Simatupang No. 1, Cilandak Timur, Pasar Minggu, Jakarta Selatan, 12560
-                </div>
-                <h5 class="footer-headline-nav" style="margin-top: 30px;">Follow Us</h5>
-                <a href="https://instagram.com/afterhour_id" target="_blank" class="footer-link-item">
-                    <span class="glyphicon glyphicon-camera"></span> @afterhour_id
+    <div class="hero-content">
+        <div class="hero-eyebrow">Premium Billiard & Lounge</div>
+        <h1 class="hero-title">
+            Main Seru,<br>Nongkrong <span class="accent">Asik.</span>
+        </h1>
+        <p class="hero-sub">
+            Afterhour hadir di 6 lokasi strategis Jakarta dengan meja billiard premium kelas Regular, VIP Smoking, hingga VVIP — semua tersedia untuk Anda.
+        </p>
+        <div class="hero-cta">
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer'): ?>
+                <a href="dashboardcustomer.php?p=booking" class="btn-hero-book">
+                    🎱 &nbsp; BOOKING MEJA SEKARANG
                 </a>
-                <a href="https://tiktok.com/@afterhour_id" target="_blank" class="footer-link-item">
-                    <span class="glyphicon glyphicon-play"></span> @afterhour_id
+                <a href="dashboardcustomer.php?p=mybookings" class="btn-hero-member">Lihat Booking Saya</a>
+            <?php else: ?>
+                <a href="index.php?p=login" class="btn-hero-book">
+                    🎱 &nbsp; BOOKING MEJA SEKARANG
                 </a>
-            </div>
-            <div class="col-md-3 col-sm-6 footer-col-right">
-                <h5 class="footer-headline-nav">Contact Us</h5>
-                <a href="mailto:hello@courtside.id" class="footer-link-item">
-                    <span class="glyphicon glyphicon-envelope"></span> Hallo@afterhour.id
+                <a href="index.php?p=register" class="btn-hero-member">
+                    <span class="glyphicon glyphicon-ok-sign"></span> Daftar Member Gratis
                 </a>
-                <a href="tel:+6282123168944" class="footer-link-item">
-                    <span class="glyphicon glyphicon-earphone"></span> +62 821-2316-8944
-                </a>
-            </div>
+            <?php endif; ?>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-left footer-bottom-copyright">
-                &copy; Afterhour Billiard &amp; Lounge. All Rights Reserved.
-            </div>
-        </div>
-    </footer>
+    </div>
 
-    <script>
-        window.addEventListener('scroll', function() {
-            var navbar = document.getElementById('mainNavbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('nav-scrolled'); 
-            } else {
-                navbar.classList.remove('nav-scrolled'); 
-            }
-        });
-    </script>
+    <div class="hero-dots" id="heroDots">
+        <div class="hdot active" onclick="goSlide(0)"></div>
+        <div class="hdot" onclick="goSlide(1)"></div>
+        <div class="hdot" onclick="goSlide(2)"></div>
+        <div class="hdot" onclick="goSlide(3)"></div>
+    </div>
+</section>
+
+<!-- ───────────────── STATS BAR ─────────────── -->
+<div class="container-xl">
+    <div class="stats-bar">
+        <div class="stat-item"><div class="stat-num">6</div><div class="stat-lbl">Outlet di Jakarta</div></div>
+        <div class="stat-item"><div class="stat-num">50+</div><div class="stat-lbl">Meja Premium</div></div>
+        <div class="stat-item"><div class="stat-num">3</div><div class="stat-lbl">Kelas Meja</div></div>
+        <div class="stat-item"><div class="stat-num">24<span style="font-size:20px">Jam</span></div><div class="stat-lbl">Buka Setiap Hari</div></div>
+    </div>
+</div>
+
+<!-- ───────────────── FOTO GALERI ────────────── -->
+<section class="photo-grid-section" id="gallery">
+    <div class="container-xl">
+        <div class="section-label">Galeri</div>
+        <div class="section-title">Suasana <br>Afterhour</div>
+        <p class="section-desc" style="margin-bottom:32px">Rasakan atmosfer premium yang memadukan keseruan billiard dengan kenyamanan lounge eksklusif.</p>
+
+        <div class="photo-grid">
+            <!-- Row 1 -->
+            <div class="pg-item span-row2">
+                <img src="assets/stocks/Afterhour (2).png" alt="Afterhour Billiard">
+                <div class="pg-overlay"><span>Meja Premium</span></div>
+            </div>
+            <div class="pg-item">
+                <img src="assets/stocks/Afterhour (1).png" alt="Afterhour Lounge">
+                <div class="pg-overlay"><span>Lounge Area</span></div>
+            </div>
+            <div class="pg-item">
+                <img src="assets/stocks/Afterhour (4).png" alt="Afterhour VIP">
+                <div class="pg-overlay"><span>VIP Zone</span></div>
+            </div>
+            <div class="pg-item">
+                <img src="assets/stocks/Afterhour (5).png" alt="Billiard Balls">
+                <div class="pg-overlay"><span>Siap Tempur</span></div>
+            </div>
+            <!-- Row 2 -->
+            <div class="pg-item">
+                <img src="assets/stocks/Afterhour (3).png" alt="Playing">
+                <div class="pg-overlay"><span>Aksi Seru</span></div>
+            </div>
+            <div class="pg-item">
+                <img src="assets/stocks/Afterhour (9).png" alt="Coaching">
+                <div class="pg-overlay"><span>Belajar Bareng</span></div>
+            </div>
+            <div class="pg-item">
+                <img src="assets/stocks/Afterhour (10).png" alt="Atmosphere">
+                <div class="pg-overlay"><span>Vibes Premium</span></div>
+            </div>
+        </div>
+
+        <!-- Row 3: bottom strip -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px">
+            <?php for ($i=6; $i<=10; $i++): ?>
+            <div class="pg-item" style="height:140px;border-radius:8px">
+                <img src="assets/stocks/Afterhour (<?= $i ?>).png" alt="Afterhour <?= $i ?>">
+                <div class="pg-overlay"><span>Afterhour</span></div>
+            </div>
+            <?php endfor; ?>
+        </div>
+    </div>
+</section>
+
+<!-- ───────────────── KELAS MEJA ─────────────── -->
+<section class="section" id="kelas" style="background:#0d0208;border-top:1px solid #2f0618">
+    <div class="container-xl">
+        <div class="section-label">Pilihan Meja</div>
+        <div class="section-title">Kelas Sesuai<br>Selera Anda</div>
+        <p class="section-desc">Dari casual hingga ultra-premium, Afterhour menyediakan tiga kelas meja untuk memenuhi kebutuhan Anda.</p>
+
+        <div class="class-cards">
+            <!-- Regular -->
+            <div class="class-card">
+                <div class="class-card-img">
+                    <img src="assets/stocks/Afterhour (7).png" alt="Regular Floor">
+                </div>
+                <div class="class-card-body">
+                    <span class="class-card-tag tag-regular">Regular Floor</span>
+                    <div class="class-card-name">Regular</div>
+                    <p class="class-card-desc">Meja billiard standar dengan kualitas terjamin. Cocok untuk sesi santai bersama teman.</p>
+                    <div class="class-card-price">Rp 35.000 <span>/ jam</span></div>
+                </div>
+            </div>
+            <!-- VIP -->
+            <div class="class-card">
+                <div class="class-card-img">
+                    <img src="assets/stocks/Afterhour (8).png" alt="VIP Smoking">
+                </div>
+                <div class="class-card-body">
+                    <span class="class-card-tag tag-vip">VIP Smoking</span>
+                    <div class="class-card-name">VIP Smoking</div>
+                    <p class="class-card-desc">Area VIP eksklusif dengan fasilitas smoking lounge dan meja premium berstandar tinggi.</p>
+                    <div class="class-card-price">Rp 60.000 <span>/ jam</span></div>
+                </div>
+            </div>
+            <!-- VVIP -->
+            <div class="class-card" style="border-color:#3a1a00">
+                <div class="class-card-img">
+                    <img src="assets/stocks/Afterhour (11).png" alt="VVIP">
+                </div>
+                <div class="class-card-body">
+                    <span class="class-card-tag tag-vvip">VVIP</span>
+                    <div class="class-card-name">VVIP</div>
+                    <p class="class-card-desc">Pengalaman bermain paling premium dengan privasi penuh, meja terbaik, dan layanan prioritas.</p>
+                    <div class="class-card-price" style="color:#ffaa00">Rp 100.000 <span>/ jam</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ───────────────── OUTLET ─────────────────── -->
+<section class="section" id="outlet">
+    <div class="container-xl">
+        <div class="section-label">Lokasi Kami</div>
+        <div class="section-title">6 Outlet<br>di Jakarta</div>
+        <p class="section-desc" style="margin-bottom:0">Temukan Afterhour terdekat dari lokasi Anda dan nikmati pengalaman bermain terbaik.</p>
+
+        <div class="outlet-grid" style="margin-top:36px">
+            <?php
+            $outlets = [
+                ['Afterhour Cikini',  'Cikini, Jakarta Pusat',       'Afterhour (3).png'],
+                ['Afterhour Menteng', 'Menteng, Jakarta Pusat',       'Afterhour (6).png'],
+                ['Afterhour Sunter',  'Sunter Agung, Jakarta Utara',  'Afterhour (7).png'],
+                ['Afterhour PIK',     'PIK, Jakarta Utara',           'Afterhour (8).png'],
+                ['Afterhour Poins',   'Lebak Bulus, Jakarta Selatan', 'Afterhour (9).png'],
+                ['M Billiards Blok M','Melawai, Jakarta Barat',       'Afterhour (10).png'],
+            ];
+            foreach ($outlets as $ol):
+            ?>
+            <div class="outlet-card">
+                <img src="assets/stocks/<?= $ol[2] ?>" alt="<?= $ol[0] ?>">
+                <div class="outlet-card-overlay">
+                    <div class="outlet-card-name"><?= $ol[0] ?></div>
+                    <div class="outlet-card-loc">
+                        <span class="glyphicon glyphicon-map-marker"></span> <?= $ol[1] ?>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<!-- ───────────────── PROMO ──────────────────── -->
+<?php
+// Tampilkan promo aktif dari database
+require_once('class/class.Discount.php');
+$objDiscount    = new Discount();
+$activeDiscounts= $objDiscount->SelectActiveDiscounts();
+if (!empty($activeDiscounts)):
+?>
+<section class="promo-section" id="promo">
+    <div class="container-xl">
+        <div class="promo-inner">
+            <div>
+                <div class="section-label">Promo Aktif</div>
+                <div class="section-title">Hemat Lebih<br>Main Lebih Lama</div>
+                <p class="section-desc" style="margin-bottom:24px">Manfaatkan promo eksklusif Afterhour dan dapatkan diskon spesial untuk sesi bermain Anda.</p>
+                <?php if (!isset($_SESSION['role'])): ?>
+                <a href="index.php?p=register" class="btn-hero-book" style="font-size:13px;padding:12px 28px">
+                    Daftar &amp; Nikmati Promo
+                </a>
+                <?php endif; ?>
+            </div>
+            <div class="promo-cards">
+                <?php foreach ($activeDiscounts as $d): ?>
+                <div class="promo-mini">
+                    <div class="pm-pct">
+                        <div class="pn"><?= (int)$d->discount_pct ?>%</div>
+                        <div class="pl">OFF</div>
+                    </div>
+                    <div>
+                        <h5><?= htmlspecialchars($d->title) ?></h5>
+                        <p><?= htmlspecialchars($d->description) ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- ───────────────── CTA SECTION ────────────── -->
+<section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-content container-xl">
+        <h2 class="cta-title">Siap Bermain Malam Ini?</h2>
+        <p class="cta-sub">Reservasi meja favorit Anda sekarang dan rasakan pengalaman billiard premium bersama Afterhour.</p>
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer'): ?>
+            <a href="dashboardcustomer.php?p=booking" class="btn-hero-book">🎱 &nbsp; BOOKING SEKARANG</a>
+        <?php else: ?>
+            <a href="index.php?p=login" class="btn-hero-book">🎱 &nbsp; BOOKING SEKARANG</a>
+            &nbsp;&nbsp;
+            <a href="index.php?p=register" class="btn-hero-member" style="display:inline-flex">Daftar Gratis</a>
+        <?php endif; ?>
+    </div>
+</section>
+
+<!-- ───────────────── FOOTER ─────────────────── -->
+<footer class="ah-footer">
+    <div class="container-xl">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">AFTERHOUR</div>
+                <p class="footer-desc">Billiard & Lounge premium terbaik di Jakarta. Hadir di 6 lokasi strategis untuk memenuhi hasrat bermain Anda.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Navigasi</h5>
+                <a href="#gallery">Galeri</a>
+                <a href="#kelas">Kelas Meja</a>
+                <a href="#outlet">Outlet</a>
+                <a href="#promo">Promo</a>
+            </div>
+            <div class="footer-col">
+                <h5>Akun</h5>
+                <a href="index.php?p=login">Masuk</a>
+                <a href="index.php?p=register">Daftar Member</a>
+                <?php if (isset($_SESSION['role'])): ?>
+                    <?php if ($_SESSION['role']==='admin'): ?>
+                        <a href="dashboardadmin.php">Admin Panel</a>
+                    <?php elseif ($_SESSION['role']==='manager'): ?>
+                        <a href="dashboardmanager.php">Manager Panel</a>
+                    <?php else: ?>
+                        <a href="dashboardcustomer.php?p=booking">Booking Meja</a>
+                        <a href="dashboardcustomer.php?p=mybookings">Riwayat Booking</a>
+                    <?php endif; ?>
+                    <a href="logout.php">Logout</a>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span class="footer-copy">© <?= date('Y') ?> Afterhour Billiard & Lounge. All rights reserved.</span>
+            <span class="footer-copy">Made with ❤️ for billiard lovers</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+/* ── Navbar scroll effect ──────────────────── */
+window.addEventListener('scroll', function() {
+    var nav = document.getElementById('mainNav');
+    if (window.scrollY > 60) { nav.classList.add('scrolled'); }
+    else { nav.classList.remove('scrolled'); }
+});
+
+/* ── Hero Slider ───────────────────────────── */
+var slides     = document.querySelectorAll('.hero-slide');
+var dots       = document.querySelectorAll('.hdot');
+var current    = 0;
+var slideTimer;
+
+function goSlide(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    clearInterval(slideTimer);
+    slideTimer = setInterval(function(){ goSlide(current + 1); }, 5000);
+}
+
+slideTimer = setInterval(function(){ goSlide(current + 1); }, 5000);
+</script>
 </body>
 </html>

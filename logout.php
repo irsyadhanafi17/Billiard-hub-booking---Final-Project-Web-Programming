@@ -1,8 +1,7 @@
 <?php
-if (!isset($_SESSION)) {
-    session_start();
-}
+if (!isset($_SESSION)) { session_start(); }
+$_SESSION = [];
 session_destroy();
-echo "<script>alert('Anda telah keluar dari sistem Afterhour');</script>";
-echo '<script>window.location = "index.php";</script>';
+echo "<script>alert('Anda telah keluar dari sistem Afterhour. Sampai jumpa!');</script>";
+echo '<script>window.location="index.php";</script>';
 ?>

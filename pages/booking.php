@@ -1,20 +1,20 @@
 <?php
 if (!isset($_SESSION["role"]) || $_SESSION["role"] != 'customer') {
     echo "<script>alert('Akses ilegal!');</script>";
-    echo "<script>window.location='index.php?p=login';</script>";
-    exit();
+    echo "<script>window.location='index.php?p=login';</script>"; exit();
 }
 
-require_once('./class/class.Outlet.php');
-require_once('./class/class.BilliardTable.php');
-require_once('./class/class.Booking.php');
+require_once(__DIR__.'/../class/class.Outlet.php');
+require_once(__DIR__.'/../class/class.BilliardTable.php');
+require_once(__DIR__.'/../class/class.Booking.php');
+require_once(__DIR__.'/../class/class.Mail.php');
+require_once(__DIR__.'/../class/class.User.php');
 
-$objOutlet = new Outlet();
-$objTable = new BilliardTable();
+$objOutlet  = new Outlet();
+$objTable   = new BilliardTable();
 $objBooking = new Booking();
-
-$arrOutlet = $objOutlet->SelectAllOutlet();
-$arrTable = [];
+$arrOutlet  = $objOutlet->SelectAllOutlet();
+$arrTable   = [];
 $selected_outlet = '';
 
 if (isset($_POST['outlet_id']) && $_POST['outlet_id'] != '') {
@@ -23,530 +23,214 @@ if (isset($_POST['outlet_id']) && $_POST['outlet_id'] != '') {
 }
 
 if (isset($_POST['btnSubmit'])) {
-    $objBooking->userid = $_SESSION['userid']; 
-    $objBooking->table_id = $_POST['table_id'];
-    $objBooking->booking_date = $_POST['booking_date'];
-    $objBooking->start_time = $_POST['start_time'];
-    $objBooking->duration_hours = $_POST['duration_hours'];
-
+    $objBooking->userid        = $_SESSION['userid'];
+    $objBooking->table_id      = $_POST['table_id'];
+    $objBooking->booking_date  = $_POST['booking_date'];
+    $objBooking->start_time    = $_POST['start_time'];
+    $objBooking->duration_hours= $_POST['duration_hours'];
     $objBooking->AddBooking();
 
-    echo "<script>alert('$objBooking->message');</script>";
+    echo "<script>alert('" . addslashes($objBooking->message) . "');</script>";
     if ($objBooking->hasil) {
-        // Redirect ke riwayat booking
-        echo '<script>window.location = "dashboardcustomer.php?p=mybookings";</script>';
+        // Kirim email konfirmasi (dapatkan nama outlet untuk email)
+        $outletObj = new Outlet();
+        $arrAllOutlets = $outletObj->SelectAllOutlet();
+        $outletName = '';
+        foreach ($arrAllOutlets as $ol) {
+            if ($ol->outlet_id == $selected_outlet) { $outletName = $ol->outlet_name; break; }
+        }
+        // Ambil info meja
+        $tableInfo = $arrTable;
+        $tableNumber = ''; $classType = '';
+        foreach ($tableInfo as $t) {
+            if ($t->table_id == $_POST['table_id']) { $tableNumber = $t->table_number; $classType = $t->class_type; break; }
+        }
+        $bookingData = [
+            'outlet_name'   => $outletName,
+            'table_number'  => $tableNumber,
+            'class_type'    => $classType,
+            'booking_date'  => $_POST['booking_date'],
+            'start_time'    => $_POST['start_time'],
+            'duration_hours'=> $_POST['duration_hours'],
+            'total_price'   => $objBooking->total_price,
+        ];
+        @Mail::SendBookingConfirmation($_SESSION['email'], $_SESSION['name'], $bookingData);
+        echo '<script>window.location="dashboardcustomer.php?p=mybookings";</script>';
     }
 }
 ?>
 
-<!-- ── GOOGLE FONTS ─────────────────────────────────────────── -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,700&family=EB+Garamond:wght@400;500;600&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
-
 <style>
-    /* ── Reset & Base ──────────────────────────────────────────── */
-    body {
-        background-color: #0D0D0D;
-        font-family: 'Crimson Text', Georgia, serif;
-    }
-
-    /* ── Outer wrapper ─────────────────────────────────────────── */
-    .afterhour-container {
-        margin-top: 0;
-        margin-bottom: 0;
-        min-height: 100vh;
-        display: flex;        /* flexbox agar dua kolom sama tinggi */
-        align-items: stretch;
-    }
-
-    /* ═══════════════════════════════════════════════════════════
-       LEFT COLUMN — Hero Brand Section
-    ═══════════════════════════════════════════════════════════ */
-    .brand-section {
-        position: relative;
-        overflow: hidden;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-
-        /* ── FOTO LATAR ──────────────────────────────────────────
-           Ganti path di bawah dengan path foto biliar lo.
-           Contoh kalau pakai assets/img/:
-           background-image: url('../assets/img/billiard-room.jpg');
-        ─────────────────────────────────────────────────────── */
-        background-image: url('assets/Afterhour (1).png');
-        background-size: cover;
-        background-position: center 25%;
-        min-height: 100vh;
-    }
-
-    /* Gradient scrim di atas foto */
-    .brand-section::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            160deg,
-            rgba(13, 13, 13, 0.65) 0%,
-            rgba(74, 14, 23, 0.60) 45%,
-            rgba(13, 13, 13, 0.88) 100%
-        );
-        z-index: 1;
-    }
-
-    /* Garis emas vertikal pemisah kanan */
-    .brand-section::after {
-        content: '';
-        position: absolute;
-        top: 60px;
-        bottom: 60px;
-        right: 0;
-        width: 1px;
-        background: linear-gradient(
-            to bottom,
-            transparent,
-            rgba(212, 175, 55, 0.45) 20%,
-            rgba(212, 175, 55, 0.45) 80%,
-            transparent
-        );
-        z-index: 2;
-    }
-
-    /* Konten brand menumpuk di atas scrim */
-    .brand-inner {
-        position: relative;
-        z-index: 3;
-        padding: 60px 52px;
-    }
-
-    /* Eyebrow line */
-    .brand-eyebrow {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 22px;
-    }
-    .brand-eyebrow-line {
-        height: 1px;
-        width: 32px;
-        background: #D4AF37;
-        opacity: 0.6;
-    }
-    .brand-eyebrow-text {
-        font-family: 'EB Garamond', serif;
-        font-size: 11px;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        color: rgba(212, 175, 55, 0.6);
-        margin: 0;
-    }
-
-    /* Logotype */
-    .neon-title {
-        font-family: 'Playfair Display', serif;
-        font-weight: 700;
-        font-style: italic;
-        font-size: 68px;
-        letter-spacing: -0.02em;
-        line-height: 1;
-        color: #D4AF37;
-        text-shadow: 0 4px 40px rgba(212, 175, 55, 0.30);
-        margin: 0 0 14px;
-    }
-
-    /* Subtitle */
-    .neon-subtitle {
-        font-family: 'EB Garamond', serif;
-        font-size: 16px;
-        letter-spacing: 0.08em;
-        color: rgba(232, 220, 200, 0.65);
-        text-transform: none;
-        margin-bottom: 40px;
-        text-shadow: none;
-    }
-
-    /* Divider emas tipis */
-    .brand-divider {
-        height: 1px;
-        background: linear-gradient(
-            to right,
-            rgba(212, 175, 55, 0.30),
-            transparent
-        );
-        margin-bottom: 28px;
-    }
-
-
-    /* ═══════════════════════════════════════════════════════════
-       RIGHT COLUMN — Form Section
-    ═══════════════════════════════════════════════════════════ */
-    .form-section {
-        background-color: #0D0D0D;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 56px 60px;
-        min-height: 100vh;
-    }
-
-    /* Card wrapper */
-    .booking-card-premium {
-        background: linear-gradient(160deg, #1a0a0e 0%, #110810 50%, #170b0f 100%);
-        border: 1px solid rgba(212, 175, 55, 0.22);
-        box-shadow:
-            0 0 0 1px rgba(74, 14, 23, 0.4) inset,
-            0 24px 60px rgba(0, 0, 0, 0.65);
-        border-radius: 4px;
-        overflow: hidden;
-        color: #EDE8DC;
-        width: 100%;
-    }
-
-    /* Garis emas atas kartu */
-    .card-gold-rule {
-        height: 1px;
-        background: linear-gradient(to right, transparent, #D4AF37, transparent);
-    }
-
-    .card-body-inner {
-        padding: 36px 40px 40px;
-    }
-
-    /* Card header */
-    .card-eyebrow {
-        font-family: 'EB Garamond', serif;
-        font-size: 11px;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: rgba(212, 175, 55, 0.55);
-        margin: 0 0 10px;
-        display: block;
-    }
-    .card-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 26px;
-        font-weight: 600;
-        color: #EDE8DC;
-        margin: 0 0 6px;
-        letter-spacing: -0.01em;
-    }
-    .card-subtitle {
-        font-family: 'Crimson Text', serif;
-        font-size: 15px;
-        color: #8A7E6C;
-        margin: 0 0 28px;
-        line-height: 1.5;
-    }
-
-    /* Divider dalam card */
-    .form-divider {
-        height: 1px;
-        background: linear-gradient(to right, rgba(212, 175, 55, 0.22), transparent);
-        margin: 0 0 28px;
-    }
-
-    /* ── Form fields ────────────────────────────────────────── */
-    .form-group-custom {
-        margin-bottom: 22px;
-    }
-
-    .form-group-custom label {
-        font-family: 'EB Garamond', serif;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.13em;
-        color: rgba(212, 175, 55, 0.60);
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    /* Input-group addon (ikon kiri) */
-    .input-addon-dark {
-        background-color: #1C141A !important;
-        border: 1px solid rgba(212, 175, 55, 0.20) !important;
-        border-right: none !important;
-        color: rgba(212, 175, 55, 0.55) !important;
-        border-radius: 4px 0 0 4px !important;
-    }
-
-    /* Input & select */
-    .form-control-premium {
-        background-color: #1C141A;
-        border: 1px solid rgba(212, 175, 55, 0.20);
-        border-left: none;
-        color: #EDE8DC;
-        height: 46px;
-        border-radius: 0 4px 4px 0;
-        font-family: 'Crimson Text', serif;
-        font-size: 15px;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .form-control-premium:focus {
-        border-color: rgba(212, 175, 55, 0.60);
-        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.10);
-        background-color: #1C141A;
-        color: #EDE8DC;
-        outline: none;
-    }
-
-    .form-control-premium option {
-        background-color: #1C141A;
-        color: #EDE8DC;
-    }
-
-    /* Placeholder / empty select color */
-    .form-control-premium.placeholder-active {
-        color: #8A7E6C;
-    }
-
-    /* ── Buttons ───────────────────────────────────────────── */
-    .btn-action-row {
-        margin-top: 32px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .btn-neon-book {
-        background: #1E6B3E;
-        color: #EDE8DC;
-        font-family: 'EB Garamond', serif;
-        font-weight: 700;
-        font-size: 13px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        border: 1px solid rgba(34, 197, 94, 0.35);
-        height: 46px;
-        border-radius: 4px;
-        padding: 0 32px;
-        box-shadow: 0 4px 20px rgba(30, 107, 62, 0.35);
-        transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-        cursor: pointer;
-    }
-
-    .btn-neon-book:hover,
-    .btn-neon-book:focus {
-        background: #196035;
-        color: #EDE8DC;
-        box-shadow: 0 6px 28px rgba(30, 107, 62, 0.50);
-        transform: translateY(-1px);
-        text-decoration: none;
-    }
-
-    .btn-kembali {
-        background: transparent;
-        border: 1px solid rgba(138, 126, 108, 0.28);
-        color: #8A7E6C;
-        font-family: 'EB Garamond', serif;
-        font-weight: 600;
-        font-size: 13px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        height: 46px;
-        border-radius: 4px;
-        padding: 0 24px;
-        transition: border-color 0.2s, color 0.2s;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-    }
-
-    .btn-kembali:hover,
-    .btn-kembali:focus {
-        border-color: rgba(212, 175, 55, 0.30);
-        color: #EDE8DC;
-        text-decoration: none;
-    }
-
-    /* Footer note */
-    .form-footer-note {
-        font-family: 'Crimson Text', serif;
-        font-size: 12px;
-        color: rgba(138, 126, 108, 0.45);
-        text-align: center;
-        margin: 20px 0 0;
-        letter-spacing: 0.04em;
-    }
-
-    /* Garis emas bawah kartu */
-    .card-gold-rule-bottom {
-        height: 1px;
-        background: linear-gradient(to right, transparent, #D4AF37, transparent);
-        margin-top: 8px;
-    }
+.booking-wrapper{padding:30px 0;min-height:80vh}
+.booking-header{margin-bottom:28px}
+.booking-header h3{font-family:'Boldonse',sans-serif!important;font-size:22px!important;color:#fff;margin:0 0 6px}
+.booking-header p{color:#8A7E6C;font-size:13px;margin:0}
+.form-card{background:#1f0410;border:1px solid #2f0618;border-radius:16px;padding:32px;margin-bottom:20px}
+.form-card-title{font-family:'DM Sans',sans-serif;font-weight:700;color:#8bd100;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:0 0 20px;padding-bottom:12px;border-bottom:1px solid #2f0618}
+.fgroup{margin-bottom:20px}
+.fgroup label{font-family:'DM Sans',sans-serif;font-weight:500;color:#8A7E6C;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:block}
+.fcontrol{background:#0d0106;border:1px solid #2f0618;border-radius:10px;height:46px;color:#fff;font-size:14px;padding:0 16px;width:100%;transition:all 0.3s;-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box}
+.fcontrol:focus{border-color:#8bd100;outline:none;box-shadow:0 0 8px rgba(139,209,0,0.15)}
+.fcontrol option{background:#0d0106;color:#fff}
+.input-with-icon{position:relative}
+.input-with-icon .fcontrol{padding-left:42px}
+.input-with-icon .icon-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#e81b7b;font-size:14px}
+.price-preview{background:#0d0106;border:1px solid #2f0618;border-radius:10px;padding:16px;margin-bottom:20px;display:none}
+.price-preview.show{display:block}
+.price-preview .label-p{color:#8A7E6C;font-size:12px;margin-bottom:4px}
+.price-preview .amount{color:#8bd100;font-size:28px;font-weight:900;font-family:'Boldonse',sans-serif}
+.btn-book{background:#8bd100;color:#000;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.05em;text-transform:uppercase;height:50px;padding:0 40px;border-radius:30px;border:none;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;gap:8px}
+.btn-book:hover{background:#fff;transform:translateY(-2px)}
+.btn-back{background:transparent;color:#8A7E6C;font-family:'DM Sans',sans-serif;font-size:13px;height:50px;padding:0 24px;border-radius:30px;border:1px solid #2f0618;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.3s;margin-left:12px}
+.btn-back:hover{color:#fff;border-color:#555;text-decoration:none}
+.info-box{background:#0a1a0a;border:1px solid #1a3a1a;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#7acc7a}
+.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px}
+.table-option{background:#0d0106;border:2px solid #2f0618;border-radius:10px;padding:14px;cursor:pointer;transition:all 0.2s;position:relative}
+.table-option:hover{border-color:#8bd100}
+.table-option.selected{border-color:#8bd100;background:#0d1a00}
+.table-option input[type=radio]{position:absolute;opacity:0;width:0;height:0}
+.table-option .t-num{font-weight:700;color:#fff;font-size:16px;margin-bottom:4px}
+.table-option .t-class{font-size:11px;color:#8A7E6C;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.table-option .t-price{color:#8bd100;font-size:14px;font-weight:700}
+.class-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.badge-regular{background:#1a3a2a;color:#5acc8a}
+.badge-vip{background:#1a1a3a;color:#8a8aff}
+.badge-vvip{background:#3a1a00;color:#ffaa00}
 </style>
 
+<div class="booking-wrapper">
+    <div class="booking-header">
+        <h3>🎱 Reservasi Meja</h3>
+        <p>Pilih outlet, meja, dan jadwal bermain Anda</p>
+    </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     HTML LAYOUT — Ganti <div class="row afterhour-container"> lama
-     dengan blok di bawah ini. Semua name attribute, PHP loop,
-     dan action button tidak diubah sama sekali.
-══════════════════════════════════════════════════════════════ -->
+    <form action="" method="post" id="bookingForm">
 
-<div class="row afterhour-container">
+        <!-- STEP 1: Pilih Outlet -->
+        <div class="form-card">
+            <div class="form-card-title">01 &mdash; Pilih Lokasi Outlet</div>
+            <div class="fgroup">
+                <label>Cabang Afterhour</label>
+                <div class="input-with-icon">
+                    <span class="icon-prefix glyphicon glyphicon-map-marker"></span>
+                    <select class="fcontrol" name="outlet_id" id="outletSelect" onchange="this.form.submit()">
+                        <option value="">-- Pilih Lokasi Cabang --</option>
+                        <?php foreach ($arrOutlet as $outlet): ?>
+                            <option value="<?= $outlet->outlet_id ?>"
+                                <?= ($selected_outlet == $outlet->outlet_id) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($outlet->outlet_name) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-    <!-- ── LEFT: Brand Hero ── col-md-5 ───────────────────── -->
-    <div class="col-md-5 brand-section">
-        <div class="brand-inner">
+        <?php if (!empty($arrTable)): ?>
+        <!-- STEP 2: Pilih Meja -->
+        <div class="form-card">
+            <div class="form-card-title">02 &mdash; Pilih Meja</div>
+            <div class="table-grid" id="tableGrid">
+                <?php foreach ($arrTable as $table):
+                    $badgeClass = $table->class_type == 'Regular Floor' ? 'badge-regular' :
+                                 ($table->class_type == 'VIP Smoking'   ? 'badge-vip' : 'badge-vvip');
+                ?>
+                <label class="table-option" id="opt_<?= $table->table_id ?>" onclick="selectTable(<?= $table->table_id ?>, <?= $table->price_per_hour ?>)">
+                    <input type="radio" name="table_id" value="<?= $table->table_id ?>" required>
+                    <div class="t-num">Meja <?= htmlspecialchars($table->table_number) ?></div>
+                    <span class="class-badge <?= $badgeClass ?>"><?= htmlspecialchars($table->class_type) ?></span>
+                    <div class="t-price">Rp <?= number_format($table->price_per_hour,0,',','.') ?>/jam</div>
+                </label>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php elseif ($selected_outlet): ?>
+        <div class="info-box">
+            <span class="glyphicon glyphicon-info-sign"></span> Tidak ada meja tersedia di outlet ini saat ini.
+        </div>
+        <?php endif; ?>
 
-            <!-- Eyebrow -->
-            <div class="brand-eyebrow">
-                <span class="brand-eyebrow-line"></span>
-                <span class="brand-eyebrow-text">Est. 2019 &middot; Jakarta</span>
+        <!-- STEP 3: Jadwal -->
+        <div class="form-card">
+            <div class="form-card-title">03 &mdash; Tentukan Jadwal & Durasi</div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="fgroup">
+                        <label>Tanggal Bermain</label>
+                        <div class="input-with-icon">
+                            <span class="icon-prefix glyphicon glyphicon-calendar"></span>
+                            <input type="date" name="booking_date" class="fcontrol"
+                                   style="padding-left:42px" required
+                                   min="<?= date('Y-m-d') ?>"
+                                   value="<?= isset($_POST['booking_date']) ? htmlspecialchars($_POST['booking_date']) : '' ?>">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="fgroup">
+                        <label>Jam Mulai</label>
+                        <div class="input-with-icon">
+                            <span class="icon-prefix glyphicon glyphicon-time"></span>
+                            <input type="time" name="start_time" class="fcontrol"
+                                   style="padding-left:42px" required
+                                   value="<?= isset($_POST['start_time']) ? htmlspecialchars($_POST['start_time']) : '' ?>">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="fgroup">
+                        <label>Durasi Pemakaian</label>
+                        <div class="input-with-icon">
+                            <span class="icon-prefix glyphicon glyphicon-hourglass"></span>
+                            <select name="duration_hours" class="fcontrol" style="padding-left:42px" onchange="updatePrice()" id="durSelect">
+                                <option value="1">1 Jam</option>
+                                <option value="2">2 Jam</option>
+                                <option value="3">3 Jam</option>
+                                <option value="4">4 Jam</option>
+                                <option value="5">5 Jam</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Logotype -->
-            <h1 class="neon-title">AFTERHOUR</h1>
-            <div class="neon-subtitle">Billiard &amp; Lounge &mdash; Premium Experience</div>
-
-            <!-- Divider -->
-            <div class="brand-divider"></div>
-
-        </div>
-    </div>
-    <!-- /col-md-5 -->
-
-    <!-- ── RIGHT: Form Card ── col-md-7 ───────────────────── -->
-    <div class="col-md-7 form-section">
-        <div class="booking-card-premium">
-
-            <!-- Garis emas atas -->
-            <div class="card-gold-rule"></div>
-
-            <div class="card-body-inner">
-
-                <!-- Card header -->
-                <span class="card-eyebrow">Reservasi Meja</span>
-                <h3 class="card-title">Buat Pemesanan</h3>
-                <p class="card-subtitle">Isi preferensi kunjungan bermain Anda di bawah ini.</p>
-
-                <div class="form-divider"></div>
-
-                <!-- ── FORM — semua name attribute TIDAK diubah ── -->
-                <form action="" method="post">
-
-                    <!-- outlet_id -->
-                    <div class="form-group form-group-custom">
-                        <label>Cabang Tempat (Outlet Location)</label>
-                        <div class="input-group">
-                            <span class="input-group-addon input-addon-dark">
-                                <span class="glyphicon glyphicon-map-marker"></span>
-                            </span>
-                            <select class="form-control form-control-premium" name="outlet_id"
-                                onChange="this.form.submit()" required>
-                                <option value="">-- Pilih Lokasi Cabang Afterhour --</option>
-                                <?php foreach ($arrOutlet as $outlet) { ?>
-                                    <option value="<?php echo $outlet->outlet_id; ?>"
-                                        <?php if ($selected_outlet == $outlet->outlet_id) echo 'selected'; ?>>
-                                        <?php echo $outlet->outlet_name; ?>
-                                    </option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- table_id -->
-                    <div class="form-group form-group-custom">
-                        <label>Nomor Meja &amp; Kelas Area</label>
-                        <div class="input-group">
-                            <span class="input-group-addon input-addon-dark">
-                                <span class="glyphicon glyphicon-tag"></span>
-                            </span>
-                            <select class="form-control form-control-premium" name="table_id" required>
-                                <option value="">-- Pilih Meja / Tipe Ruangan --</option>
-                                <?php
-                                if (!empty($arrTable)) {
-                                    foreach ($arrTable as $table) { ?>
-                                        <option value="<?php echo $table->table_id; ?>">
-                                            Meja <?php echo $table->table_number; ?> -
-                                            <?php echo $table->class_type; ?>
-                                            (Rp <?php echo number_format($table->price_per_hour, 0, ',', '.'); ?> / Jam)
-                                        </option>
-                                    <?php }
-                                } else { ?>
-                                    <option value="" disabled>Silakan pilih lokasi cabang terlebih dahulu</option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- booking_date + start_time -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group form-group-custom">
-                                <label>Tanggal Bermain</label>
-                                <div class="input-group">
-                                    <span class="input-group-addon input-addon-dark">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                                    <input type="date" class="form-control form-control-premium"
-                                        name="booking_date" required
-                                        min="<?php echo date('Y-m-d'); ?>">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group form-group-custom">
-                                <label>Jam Mulai Main</label>
-                                <div class="input-group">
-                                    <span class="input-group-addon input-addon-dark">
-                                        <span class="glyphicon glyphicon-time"></span>
-                                    </span>
-                                    <input type="time" class="form-control form-control-premium"
-                                        name="start_time" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- duration_hours -->
-                    <div class="form-group form-group-custom">
-                        <label>Durasi Pemakaian Meja</label>
-                        <div class="input-group">
-                            <span class="input-group-addon input-addon-dark">
-                                <span class="glyphicon glyphicon-hourglass"></span>
-                            </span>
-                            <select class="form-control form-control-premium" name="duration_hours" required>
-                                <option value="1">1 Jam Bermain</option>
-                                <option value="2">2 Jam Bermain</option>
-                                <option value="3">3 Jam Bermain</option>
-                                <option value="4">4 Jam Bermain</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- ── Action buttons ── -->
-                    <div class="btn-action-row">
-                        <button type="submit" name="btnSubmit" class="btn btn-neon-book">
-                            <span class="glyphicon glyphicon-ok-sign"></span>&nbsp; Confirm &amp; Book
-                        </button>
-                        <a href="dashboardcustomer.php" class="btn-kembali">
-                            Kembali
-                        </a>
-                    </div>
-
-                </form>
-                <!-- /form -->
-
-                <p class="form-footer-note">
-                    Kalkulasi harga diproses oleh server &middot; Afterhour &copy; 2024
-                </p>
-
+            <!-- Preview Harga -->
+            <div class="price-preview" id="pricePreview">
+                <div class="label-p">Estimasi Total Tagihan</div>
+                <div class="amount" id="priceAmount">Rp 0</div>
+                <div style="color:#555;font-size:11px;margin-top:4px">*Harga final dihitung server saat konfirmasi</div>
             </div>
-            <!-- /card-body-inner -->
 
-            <!-- Garis emas bawah -->
-            <div class="card-gold-rule-bottom"></div>
-
+            <div style="margin-top:10px">
+                <button type="submit" name="btnSubmit" class="btn-book" <?= empty($arrTable) ? 'disabled' : '' ?>>
+                    <span class="glyphicon glyphicon-ok-sign"></span> Konfirmasi Booking
+                </button>
+                <a href="dashboardcustomer.php" class="btn-back">
+                    <span class="glyphicon glyphicon-arrow-left"></span> Kembali
+                </a>
+            </div>
         </div>
-        <!-- /booking-card-premium -->
-    </div>
-    <!-- /col-md-7 -->
 
+    </form>
 </div>
-<!-- /row afterhour-container -->
+
+<script>
+var selectedPrice = 0;
+
+function selectTable(tableId, pricePerHour) {
+    selectedPrice = pricePerHour;
+    document.querySelectorAll('.table-option').forEach(function(el){ el.classList.remove('selected'); });
+    document.getElementById('opt_' + tableId).classList.add('selected');
+    document.querySelector('input[value="' + tableId + '"]').checked = true;
+    updatePrice();
+}
+
+function updatePrice() {
+    if (selectedPrice <= 0) return;
+    var dur = parseInt(document.getElementById('durSelect').value) || 1;
+    var total = selectedPrice * dur;
+    var formatted = 'Rp ' + total.toLocaleString('id-ID');
+    document.getElementById('priceAmount').textContent = formatted;
+    document.getElementById('pricePreview').classList.add('show');
+}
+</script>

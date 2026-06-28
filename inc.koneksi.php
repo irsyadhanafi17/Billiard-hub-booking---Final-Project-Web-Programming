@@ -3,4 +3,5 @@ $koneksi = mysqli_connect("localhost", "root", "", "afterhour_db");
 if (!$koneksi) {
     die("Koneksi Prosedural Afterhour Gagal: " . mysqli_connect_error());
 }
+mysqli_set_charset($koneksi, "utf8mb4");
 ?>

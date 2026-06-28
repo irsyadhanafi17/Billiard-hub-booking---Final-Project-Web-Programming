@@ -1,0 +1,6 @@
+uploads/*.jpg
+uploads/*.png
+uploads/*.gif
+uploads/*.webp
+vendor/
+.env

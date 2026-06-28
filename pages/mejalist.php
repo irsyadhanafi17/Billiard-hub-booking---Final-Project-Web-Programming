@@ -1,794 +1,262 @@
 <?php
-// ============================================================
-//  DATA MEJA BILLIARD — menggunakan Array PHP
-// ============================================================
+require_once(__DIR__.'/../class/class.BilliardTable.php');
+require_once(__DIR__.'/../class/class.Outlet.php');
 
-$meja_billiard = [
-    [
-        'id'          => 1,
-        'nama'        => 'Meja 1',
-        'kode'        => 'A-01',
-        'tipe'        => 'Standard',
-        'ukuran'      => '7 Feet',
-        'kondisi'     => 'Baik',
-        'harga_jam'   => 25000,
-        'status'      => 'tersedia',
-        'lokasi'      => 'Lantai 1 - Zona A',
-        'fasilitas'   => ['Stick Set', 'Chalk', 'Triangle'],
-    ],
-    [
-        'id'          => 2,
-        'nama'        => 'Meja 2',
-        'kode'        => 'A-02',
-        'tipe'        => 'Standard',
-        'ukuran'      => '7 Feet',
-        'kondisi'     => 'Baik',
-        'harga_jam'   => 25000,
-        'status'      => 'dipakai',
-        'lokasi'      => 'Lantai 1 - Zona A',
-        'fasilitas'   => ['Stick Set', 'Chalk', 'Triangle'],
-    ],
-    [
-        'id'          => 3,
-        'nama'        => 'Meja 3',
-        'kode'        => 'A-03',
-        'tipe'        => 'Standard',
-        'ukuran'      => '8 Feet',
-        'kondisi'     => 'Baik',
-        'harga_jam'   => 30000,
-        'status'      => 'tersedia',
-        'lokasi'      => 'Lantai 1 - Zona A',
-        'fasilitas'   => ['Stick Set', 'Chalk', 'Triangle', 'Score Board'],
-    ],
-    [
-        'id'          => 4,
-        'nama'        => 'Meja 4',
-        'kode'        => 'B-01',
-        'tipe'        => 'VIP',
-        'ukuran'      => '9 Feet',
-        'kondisi'     => 'Sangat Baik',
-        'harga_jam'   => 45000,
-        'status'      => 'tersedia',
-        'lokasi'      => 'Lantai 1 - Zona B (VIP)',
-        'fasilitas'   => ['Stick Premium', 'Chalk', 'Triangle', 'Score Board', 'Sofa', 'AC'],
-    ],
-    [
-        'id'          => 5,
-        'nama'        => 'Meja 5',
-        'kode'        => 'B-02',
-        'tipe'        => 'VIP',
-        'ukuran'      => '9 Feet',
-        'kondisi'     => 'Sangat Baik',
-        'harga_jam'   => 45000,
-        'status'      => 'dipakai',
-        'lokasi'      => 'Lantai 1 - Zona B (VIP)',
-        'fasilitas'   => ['Stick Premium', 'Chalk', 'Triangle', 'Score Board', 'Sofa', 'AC'],
-    ],
-    [
-        'id'          => 6,
-        'nama'        => 'Meja 6',
-        'kode'        => 'B-03',
-        'tipe'        => 'VIP',
-        'ukuran'      => '9 Feet',
-        'kondisi'     => 'Baik',
-        'harga_jam'   => 45000,
-        'status'      => 'maintenance',
-        'lokasi'      => 'Lantai 1 - Zona B (VIP)',
-        'fasilitas'   => ['Stick Premium', 'Chalk', 'Triangle', 'Score Board', 'Sofa', 'AC'],
-    ],
-    [
-        'id'          => 7,
-        'nama'        => 'Meja 7',
-        'kode'        => 'C-01',
-        'tipe'        => 'Premium',
-        'ukuran'      => '9 Feet',
-        'kondisi'     => 'Sangat Baik',
-        'harga_jam'   => 65000,
-        'status'      => 'tersedia',
-        'lokasi'      => 'Lantai 2 - Zona Premium',
-        'fasilitas'   => ['Stick Tournament', 'Chalk', 'Triangle', 'Digital Score', 'Sofa', 'AC', 'Mini Bar'],
-    ],
-    [
-        'id'          => 8,
-        'nama'        => 'Meja 8',
-        'kode'        => 'C-02',
-        'tipe'        => 'Premium',
-        'ukuran'      => '9 Feet',
-        'kondisi'     => 'Sangat Baik',
-        'harga_jam'   => 65000,
-        'status'      => 'tersedia',
-        'lokasi'      => 'Lantai 2 - Zona Premium',
-        'fasilitas'   => ['Stick Tournament', 'Chalk', 'Triangle', 'Digital Score', 'Sofa', 'AC', 'Mini Bar'],
-    ],
-];
+$objTable  = new BilliardTable();
+$objOutlet = new Outlet();
+$arrOutlet = $objOutlet->SelectAllOutlet();
 
-// ============================================================
-//  FUNGSI HELPER
-// ============================================================
-
-/** Format angka ke Rupiah */
-function formatRupiah(int $angka): string {
-    return 'Rp ' . number_format($angka, 0, ',', '.');
+// Handle actions
+if (isset($_POST['btnAdd'])) {
+    $objTable->outlet_id      = $_POST['outlet_id'];
+    $objTable->table_number   = $_POST['table_number'];
+    $objTable->class_type     = $_POST['class_type'];
+    $objTable->price_per_hour = $_POST['price_per_hour'];
+    $objTable->status         = $_POST['status'];
+    $objTable->AddTable();
+    echo "<script>alert('" . addslashes($objTable->message) . "');</script>";
+    echo '<script>window.location="dashboardadmin.php?p=mejalist";</script>'; exit();
 }
 
-/** Hitung ringkasan statistik dari array meja */
-function hitungStatistik(array $meja): array {
-    $total      = count($meja);
-    $tersedia   = 0;
-    $dipakai    = 0;
-    $maintenance = 0;
-
-    foreach ($meja as $m) {
-        if ($m['status'] === 'tersedia')    $tersedia++;
-        elseif ($m['status'] === 'dipakai') $dipakai++;
-        else                                 $maintenance++;
-    }
-
-    return compact('total', 'tersedia', 'dipakai', 'maintenance');
+if (isset($_POST['btnUpdate'])) {
+    $objTable->table_id       = $_POST['table_id'];
+    $objTable->class_type     = $_POST['class_type'];
+    $objTable->price_per_hour = $_POST['price_per_hour'];
+    $objTable->status         = $_POST['status'];
+    $objTable->UpdateTable();
+    echo "<script>alert('" . addslashes($objTable->message) . "');</script>";
+    echo '<script>window.location="dashboardadmin.php?p=mejalist";</script>'; exit();
 }
 
-/** Filter meja berdasarkan tipe */
-function filterByTipe(array $meja, string $tipe): array {
-    if ($tipe === 'semua') return $meja;
-    return array_filter($meja, fn($m) => strtolower($m['tipe']) === strtolower($tipe));
+if (isset($_GET['action']) && $_GET['action'] == 'delete') {
+    $objTable->table_id = (int)$_GET['id'];
+    $objTable->DeleteTable();
+    echo "<script>alert('" . addslashes($objTable->message) . "');</script>";
+    echo '<script>window.location="dashboardadmin.php?p=mejalist";</script>'; exit();
 }
 
-/** Filter meja berdasarkan status */
-function filterByStatus(array $meja, string $status): array {
-    if ($status === 'semua') return $meja;
-    return array_filter($meja, fn($m) => $m['status'] === $status);
-}
-
-/** Urutkan meja berdasarkan harga */
-function urutkanByHarga(array $meja, string $arah = 'asc'): array {
-    usort($meja, fn($a, $b) => $arah === 'asc'
-        ? $a['harga_jam'] <=> $b['harga_jam']
-        : $b['harga_jam'] <=> $a['harga_jam']
-    );
-    return $meja;
-}
-
-/** Ambil meja berdasarkan ID */
-function getMejaById(array $meja, int $id): ?array {
-    foreach ($meja as $m) {
-        if ($m['id'] === $id) return $m;
-    }
-    return null;
-}
-
-/** CSS class badge status */
-function badgeStatus(string $status): string {
-    return match ($status) {
-        'tersedia'    => 'badge-tersedia',
-        'dipakai'     => 'badge-dipakai',
-        'maintenance' => 'badge-maintenance',
-        default       => 'badge-tersedia',
-    };
-}
-
-/** Label status */
-function labelStatus(string $status): string {
-    return match ($status) {
-        'tersedia'    => '✅ Tersedia',
-        'dipakai'     => '🔴 Dipakai',
-        'maintenance' => '🔧 Maintenance',
-        default       => ucfirst($status),
-    };
-}
-
-// ============================================================
-//  PROSES FILTER DARI GET
-// ============================================================
-
-$filterTipe   = $_GET['tipe']   ?? 'semua';
-$filterStatus = $_GET['status'] ?? 'semua';
-$sortHarga    = $_GET['sort']   ?? '';
-
-$tampil = $meja_billiard;
-$tampil = filterByTipe($tampil, $filterTipe);
-$tampil = filterByStatus($tampil, $filterStatus);
-if ($sortHarga === 'murah')  $tampil = urutkanByHarga($tampil, 'asc');
-if ($sortHarga === 'mahal')  $tampil = urutkanByHarga($tampil, 'desc');
-
-$stats = hitungStatistik($meja_billiard);
-
-// Detail meja (jika ada ?detail=id)
-$detailMeja = null;
-if (isset($_GET['detail'])) {
-    $detailMeja = getMejaById($meja_billiard, (int) $_GET['detail']);
-}
+$filterOutlet = isset($_GET['outlet']) ? (int)$_GET['outlet'] : 0;
+$allTables    = $filterOutlet ? $objTable->SelectAllTablesByOutlet($filterOutlet) : $objTable->SelectAllTables();
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>List Meja Billiard — PHP Array</title>
+
 <style>
-/* ── RESET ─────────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-/* ── TOKENS ─────────────────────────────────────────── */
-:root{
-  --felt:      #1e5631;
-  --felt-mid:  #2d7a47;
-  --felt-lite: #3da85e;
-  --chalk:     #f0ede4;
-  --cue:       #8b5e3c;
-  --cue-lite:  #c4956a;
-  --ball-red:  #c1121f;
-  --ball-yel:  #e9c46a;
-  --ball-blue: #1d4e89;
-  --ink:       #1a1a1a;
-  --ink-mid:   #555;
-  --ink-lite:  #999;
-  --white:     #fff;
-  --surface:   #f7f5ef;
-  --radius:    10px;
-  --shadow:    0 2px 16px rgba(0,0,0,.1);
-  --shadow-lg: 0 6px 32px rgba(0,0,0,.16);
-}
-
-body{
-  font-family:'Segoe UI',system-ui,sans-serif;
-  background:var(--surface);
-  color:var(--ink);
-  min-height:100vh;
-}
-
-/* ── HEADER ─────────────────────────────────────────── */
-.header{
-  background:linear-gradient(135deg,#0d2818 0%,var(--felt) 55%,var(--felt-mid) 100%);
-  border-bottom:3px solid var(--ball-yel);
-  padding:1.25rem 2rem;
-}
-.header-inner{
-  max-width:1200px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;
-  gap:1rem;flex-wrap:wrap;
-}
-.brand{display:flex;align-items:center;gap:.9rem}
-.brand-ball{
-  width:46px;height:46px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#fff 0%,var(--ball-red) 45%,#7a0007 100%);
-  box-shadow:0 0 16px rgba(193,18,31,.5);
-  display:flex;align-items:center;justify-content:center;
-  font-weight:900;color:#fff;font-size:1.15rem;
-  flex-shrink:0;
-}
-.brand-text h1{
-  color:#fff;font-size:1.3rem;font-weight:800;
-  letter-spacing:.5px;line-height:1.1;
-}
-.brand-text span{
-  color:var(--ball-yel);font-size:.7rem;
-  letter-spacing:2px;text-transform:uppercase;
-}
-.header-info{color:rgba(255,255,255,.6);font-size:.82rem;text-align:right}
-.header-info strong{color:var(--ball-yel)}
-
-/* ── PAGE BODY ─────────────────────────────────────────── */
-.wrap{max-width:1200px;margin:0 auto;padding:2rem}
-
-/* ── STATS ─────────────────────────────────────────── */
-.stats-row{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:1rem;margin-bottom:2rem;
-}
-.stat{
-  background:var(--white);border-radius:var(--radius);
-  padding:1.1rem 1.4rem;box-shadow:var(--shadow);
-  display:flex;align-items:center;gap:.9rem;
-}
-.stat-dot{
-  width:48px;height:48px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.4rem;flex-shrink:0;
-}
-.dot-total    {background:#e8f5e9}
-.dot-tersedia {background:#e0f7e9}
-.dot-dipakai  {background:#fce4ec}
-.dot-maint    {background:#fff3e0}
-.stat-num{font-size:1.8rem;font-weight:800;color:var(--ink);line-height:1}
-.stat-lbl{font-size:.73rem;color:var(--ink-lite);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
-
-/* ── CONTROLS ─────────────────────────────────────────── */
-.controls{
-  background:var(--white);border-radius:var(--radius);
-  padding:1rem 1.25rem;box-shadow:var(--shadow);
-  display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;
-  margin-bottom:1.5rem;
-}
-.ctrl-label{font-size:.8rem;font-weight:600;color:var(--ink-mid);white-space:nowrap}
-select,input{
-  padding:.45rem .8rem;border:1.5px solid #ddd;
-  border-radius:7px;font-size:.85rem;color:var(--ink);
-  background:#fafaf8;outline:none;cursor:pointer;
-  transition:border-color .2s;
-}
-select:focus,input:focus{border-color:var(--felt-mid)}
-.btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:.45rem 1rem;border:none;border-radius:7px;
-  font-size:.83rem;font-weight:600;cursor:pointer;
-  text-decoration:none;transition:all .18s;
-}
-.btn-green{background:var(--felt);color:#fff}
-.btn-green:hover{background:#0d2818}
-.btn-ghost{background:#eee;color:var(--ink-mid)}
-.btn-ghost:hover{background:#ddd}
-.btn-detail{background:var(--felt);color:#fff;font-size:.75rem;padding:.35rem .85rem}
-.btn-detail:hover{background:#0d2818}
-
-/* ── RESULT COUNT ─────────────────────────────────────── */
-.result-info{
-  font-size:.83rem;color:var(--ink-mid);
-  margin-bottom:.9rem;padding-left:.2rem;
-}
-.result-info strong{color:var(--felt);font-size:1rem}
-
-/* ── GRID KARTU MEJA ─────────────────────────────────── */
-.meja-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
-  gap:1.25rem;
-}
-
-.meja-card{
-  background:var(--white);border-radius:var(--radius);
-  box-shadow:var(--shadow);overflow:hidden;
-  transition:transform .2s,box-shadow .2s;
-  display:flex;flex-direction:column;
-}
-.meja-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-
-.card-top{
-  padding:1rem 1.25rem .75rem;
-  border-bottom:1px solid #f0ede4;
-  display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;
-}
-.meja-nama{font-size:1.05rem;font-weight:800;color:var(--ink)}
-.meja-kode{font-size:.72rem;color:var(--ink-lite);letter-spacing:.5px}
-
-.badge{
-  display:inline-block;padding:3px 10px;
-  border-radius:20px;font-size:.7rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;
-}
-.badge-tersedia  {background:#d1fae5;color:#065f46}
-.badge-dipakai   {background:#fee2e2;color:#991b1b}
-.badge-maintenance{background:#fef3c7;color:#92400e}
-
-.card-mid{padding:.75rem 1.25rem;flex:1}
-.info-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:.3rem 0;border-bottom:1px dashed #f0ede4;font-size:.84rem;
-}
-.info-row:last-child{border:none}
-.info-key{color:var(--ink-mid)}
-.info-val{font-weight:600;color:var(--ink)}
-
-.tipe-pill{
-  display:inline-block;padding:2px 9px;border-radius:20px;
-  font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
-}
-.tipe-Standard{background:#dbeafe;color:#1e40af}
-.tipe-VIP     {background:#f3e8ff;color:#6b21a8}
-.tipe-Premium {background:#fef9c3;color:#854d0e}
-
-.harga-besar{
-  font-size:1.15rem;font-weight:800;color:var(--felt-mid)
-}
-.harga-satuan{font-size:.7rem;font-weight:400;color:var(--ink-lite)}
-
-.fasilitas-wrap{padding:.6rem 1.25rem .4rem;border-top:1px solid #f0ede4}
-.fasilitas-label{font-size:.7rem;color:var(--ink-lite);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem}
-.fasilitas-list{display:flex;flex-wrap:wrap;gap:.3rem}
-.fas-tag{
-  background:#f0faf5;border:1px solid #c6e9d5;
-  color:var(--felt-mid);padding:2px 8px;
-  border-radius:5px;font-size:.71rem;font-weight:500;
-}
-
-.card-bot{
-  padding:.75rem 1.25rem;background:#fafaf8;
-  display:flex;align-items:center;justify-content:space-between;
-  border-top:1px solid #f0ede4;
-}
-.lokasi-txt{font-size:.76rem;color:var(--ink-lite)}
-
-/* ── EMPTY STATE ─────────────────────────────────────── */
-.empty{
-  text-align:center;padding:3rem 1rem;
-  background:var(--white);border-radius:var(--radius);
-  box-shadow:var(--shadow);
-}
-.empty .big{font-size:3rem;margin-bottom:.5rem}
-.empty p{color:var(--ink-lite);font-size:.9rem}
-
-/* ── MODAL DETAIL ────────────────────────────────────── */
-.overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.55);
-  display:flex;align-items:center;justify-content:center;
-  z-index:200;padding:1rem;
-}
-.modal{
-  background:var(--white);border-radius:14px;
-  max-width:520px;width:100%;box-shadow:var(--shadow-lg);
-  overflow:hidden;
-}
-.modal-head{
-  background:linear-gradient(135deg,#0d2818,var(--felt-mid));
-  padding:1.2rem 1.5rem;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.modal-head h2{color:#fff;font-size:1.1rem;font-weight:700}
-.modal-close{
-  background:rgba(255,255,255,.15);border:none;
-  color:#fff;width:30px;height:30px;border-radius:50%;
-  font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  text-decoration:none;transition:background .15s;
-}
-.modal-close:hover{background:rgba(255,255,255,.3)}
-.modal-body{padding:1.5rem}
-.modal-row{
-  display:flex;gap:.5rem;padding:.55rem 0;
-  border-bottom:1px dashed #eee;font-size:.88rem;
-}
-.modal-row:last-child{border:none}
-.modal-key{width:130px;flex-shrink:0;color:var(--ink-mid);font-weight:500}
-.modal-val{flex:1;font-weight:600;color:var(--ink)}
-.modal-foot{
-  padding:1rem 1.5rem;background:#fafaf8;
-  border-top:1px solid #eee;
-  display:flex;justify-content:flex-end;
-}
-
-/* ── SECTION TITLE ───────────────────────────────────── */
-.section-title{
-  font-size:.7rem;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;color:var(--felt-mid);
-  margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem;
-}
-.section-title::after{
-  content:'';flex:1;height:1px;background:#ddd;
-}
-
-/* ── TABLE VIEW (mode tabel) ─────────────────────────── */
-.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
-.tbl thead tr{background:linear-gradient(135deg,#0d2818,var(--felt-mid))}
-.tbl thead th{
-  color:#fff;padding:.7rem 1rem;text-align:left;
-  font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;
-  white-space:nowrap;
-}
-.tbl tbody tr:nth-child(even){background:#fafaf8}
-.tbl tbody tr:hover{background:#f0faf5}
-.tbl td{padding:.65rem 1rem;border-bottom:1px solid #f0ede4;vertical-align:middle}
-.tbl-wrap{overflow-x:auto}
-
-/* ── VIEW TOGGLE ─────────────────────────────────────── */
-.view-toggle{display:flex;gap:.4rem}
-.vtoggle{
-  width:34px;height:34px;border:1.5px solid #ddd;border-radius:7px;
-  background:#fff;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;font-size:1rem;transition:all .15s;
-}
-.vtoggle.active{background:var(--felt);border-color:var(--felt);color:#fff}
-
-/* ── RESPONSIVE ─────────────────────────────────────── */
-@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:580px){
-  .wrap{padding:1rem}
-  .stats-row{grid-template-columns:1fr 1fr}
-  .header-inner{flex-direction:column;align-items:flex-start}
-  .meja-grid{grid-template-columns:1fr}
-}
+.ml-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.ml-header h3{font-family:'Boldonse',sans-serif!important;font-size:20px!important;color:#fff;margin:0}
+.btn-add-primary{background:#8bd100;color:#000;font-weight:700;font-size:12px;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-add-primary:hover{background:#fff}
+.filter-bar{display:flex;gap:10px;margin-bottom:18px;align-items:center;flex-wrap:wrap}
+.filter-bar select,.filter-bar a{background:#1f0410;border:1px solid #2f0618;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;text-decoration:none;cursor:pointer;transition:border-color 0.2s}
+.filter-bar select{height:38px}
+.filter-bar select:focus{outline:none;border-color:#8bd100}
+.filter-bar a:hover{border-color:#8bd100;color:#8bd100}
+.table-wrap{background:#1f0410;border:1px solid #2f0618;border-radius:14px;overflow:hidden;margin-bottom:20px}
+.table-wrap .table>thead>tr>th{background:#2f0618;color:#8A7E6C;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:none;padding:12px 14px;font-family:'DM Sans',sans-serif;font-weight:600}
+.table-wrap .table>tbody>tr>td{border-color:#2f0618;color:#EDE8DC;padding:11px 14px;font-size:13px;vertical-align:middle}
+.table-wrap .table-hover>tbody>tr:hover>td{background:rgba(255,255,255,0.02)}
+.status-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot-available{background:#8bd100}
+.dot-booked{background:#ffaa00}
+.dot-maintenance{background:#ff6666}
+.class-chip{display:inline-block;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.chip-regular{background:#1a3a2a;color:#5acc8a}
+.chip-vip{background:#1a1a3a;color:#8a8aff}
+.chip-vvip{background:#3a1a00;color:#ffaa00}
+.btn-action{font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;text-decoration:none;transition:all 0.2s;display:inline-block;border:1px solid}
+.btn-edit{background:#1a1a3a;border-color:#3a3a8a;color:#8a8aff}
+.btn-edit:hover{background:#8a8aff;color:#000;text-decoration:none}
+.btn-del{background:#3a0a0a;border-color:#8a2020;color:#ff8888;margin-left:4px}
+.btn-del:hover{background:#ff8888;color:#000;text-decoration:none}
+/* Modal */
+.modal-dark .modal-content{background:#1f0410;border:1px solid #2f0618;border-radius:16px;color:#fff}
+.modal-dark .modal-header{background:#2f0618;border-radius:14px 14px 0 0;border-bottom:1px solid #3f0828;padding:18px 24px}
+.modal-dark .modal-header h4{color:#fff;margin:0;font-family:'DM Sans',sans-serif;font-weight:700}
+.modal-dark .modal-body{padding:24px}
+.modal-dark .modal-footer{border-top:1px solid #2f0618;padding:16px 24px}
+.mform-group{margin-bottom:16px}
+.mform-group label{font-size:11px;color:#8A7E6C;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;display:block;font-family:'DM Sans',sans-serif}
+.mform-control{background:#0d0106;border:1px solid #2f0618;border-radius:8px;height:42px;color:#fff;font-size:14px;padding:0 14px;width:100%;transition:border-color 0.2s;box-sizing:border-box}
+.mform-control:focus{border-color:#8bd100;outline:none}
+.mform-control option{background:#0d0106;color:#fff}
+.btn-save{background:#8bd100;color:#000;font-weight:700;font-size:13px;padding:10px 28px;border-radius:8px;border:none;cursor:pointer;transition:all 0.2s}
+.btn-save:hover{background:#fff}
+.btn-cancel-m{background:transparent;border:1px solid #2f0618;color:#8A7E6C;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer}
+.btn-cancel-m:hover{color:#fff;border-color:#555}
 </style>
-</head>
-<body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="header-inner">
-    <div class="brand">
-      <div class="brand-ball">8</div>
-      <div class="brand-text">
-        <h1>Billiard Club</h1>
-        <span>Table Management System</span>
-      </div>
-    </div>
-    <div class="header-info">
-      📅 <?= date('l, d F Y') ?><br>
-      Total Meja: <strong><?= count($meja_billiard) ?></strong>
-    </div>
-  </div>
-</header>
-
-<!-- MODAL DETAIL MEJA -->
-<?php if ($detailMeja): ?>
-<div class="overlay">
-  <div class="modal">
-    <div class="modal-head">
-      <h2>🎱 Detail <?= $detailMeja['nama'] ?> <span style="opacity:.7;font-weight:400">(<?= $detailMeja['kode'] ?>)</span></h2>
-      <a href="?" class="modal-close">✕</a>
-    </div>
-    <div class="modal-body">
-      <div class="modal-row">
-        <span class="modal-key">Nama Meja</span>
-        <span class="modal-val"><?= $detailMeja['nama'] ?></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Kode</span>
-        <span class="modal-val"><?= $detailMeja['kode'] ?></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Tipe</span>
-        <span class="modal-val">
-          <span class="tipe-pill tipe-<?= $detailMeja['tipe'] ?>"><?= $detailMeja['tipe'] ?></span>
-        </span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Ukuran</span>
-        <span class="modal-val"><?= $detailMeja['ukuran'] ?></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Kondisi</span>
-        <span class="modal-val"><?= $detailMeja['kondisi'] ?></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Harga/Jam</span>
-        <span class="modal-val" style="color:var(--felt-mid);font-size:1.05rem"><?= formatRupiah($detailMeja['harga_jam']) ?></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Status</span>
-        <span class="modal-val"><span class="badge badge-<?= $detailMeja['status'] ?>"><?= labelStatus($detailMeja['status']) ?></span></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Lokasi</span>
-        <span class="modal-val"><?= $detailMeja['lokasi'] ?></span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-key">Fasilitas</span>
-        <span class="modal-val">
-          <div style="display:flex;flex-wrap:wrap;gap:.3rem">
-            <?php foreach ($detailMeja['fasilitas'] as $f): ?>
-            <span class="fas-tag"><?= $f ?></span>
-            <?php endforeach; ?>
-          </div>
-        </span>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <a href="?" class="btn btn-ghost">Tutup</a>
-    </div>
-  </div>
+<div class="ml-header">
+    <h3>🎱 Kelola Meja Billiard</h3>
+    <button class="btn-add-primary" data-toggle="modal" data-target="#modalAdd">
+        <span class="glyphicon glyphicon-plus"></span> Tambah Meja Baru
+    </button>
 </div>
-<?php endif; ?>
 
-<!-- PAGE -->
-<div class="wrap">
-
-  <!-- STATISTIK -->
-  <div class="stats-row">
-    <div class="stat">
-      <div class="stat-dot dot-total">🎱</div>
-      <div>
-        <div class="stat-num"><?= $stats['total'] ?></div>
-        <div class="stat-lbl">Total Meja</div>
-      </div>
-    </div>
-    <div class="stat">
-      <div class="stat-dot dot-tersedia">✅</div>
-      <div>
-        <div class="stat-num"><?= $stats['tersedia'] ?></div>
-        <div class="stat-lbl">Tersedia</div>
-      </div>
-    </div>
-    <div class="stat">
-      <div class="stat-dot dot-dipakai">🔴</div>
-      <div>
-        <div class="stat-num"><?= $stats['dipakai'] ?></div>
-        <div class="stat-lbl">Sedang Dipakai</div>
-      </div>
-    </div>
-    <div class="stat">
-      <div class="stat-dot dot-maint">🔧</div>
-      <div>
-        <div class="stat-num"><?= $stats['maintenance'] ?></div>
-        <div class="stat-lbl">Maintenance</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- KONTROL FILTER -->
-  <form method="GET" class="controls">
-    <span class="ctrl-label">Filter:</span>
-
-    <select name="tipe">
-      <option value="semua" <?= $filterTipe==='semua'?'selected':'' ?>>Semua Tipe</option>
-      <option value="Standard" <?= $filterTipe==='Standard'?'selected':'' ?>>Standard</option>
-      <option value="VIP"      <?= $filterTipe==='VIP'?'selected':'' ?>>VIP</option>
-      <option value="Premium"  <?= $filterTipe==='Premium'?'selected':'' ?>>Premium</option>
+<!-- Filter Outlet -->
+<div class="filter-bar">
+    <select onchange="window.location='dashboardadmin.php?p=mejalist&outlet='+this.value">
+        <option value="0" <?= !$filterOutlet ? 'selected' : '' ?>>Semua Outlet</option>
+        <?php foreach ($arrOutlet as $ol): ?>
+        <option value="<?= $ol->outlet_id ?>" <?= $filterOutlet == $ol->outlet_id ? 'selected' : '' ?>><?= htmlspecialchars($ol->outlet_name) ?></option>
+        <?php endforeach; ?>
     </select>
+    <span style="color:#555;font-size:13px"><?= count($allTables) ?> meja ditemukan</span>
+</div>
 
-    <select name="status">
-      <option value="semua"       <?= $filterStatus==='semua'?'selected':'' ?>>Semua Status</option>
-      <option value="tersedia"    <?= $filterStatus==='tersedia'?'selected':'' ?>>Tersedia</option>
-      <option value="dipakai"     <?= $filterStatus==='dipakai'?'selected':'' ?>>Dipakai</option>
-      <option value="maintenance" <?= $filterStatus==='maintenance'?'selected':'' ?>>Maintenance</option>
-    </select>
-
-    <select name="sort">
-      <option value="" <?= $sortHarga===''?'selected':'' ?>>Urutan Default</option>
-      <option value="murah" <?= $sortHarga==='murah'?'selected':'' ?>>Harga Termurah</option>
-      <option value="mahal" <?= $sortHarga==='mahal'?'selected':'' ?>>Harga Termahal</option>
-    </select>
-
-    <!-- View mode -->
-    <input type="hidden" name="view" id="viewInput" value="<?= htmlspecialchars($_GET['view'] ?? 'card') ?>">
-
-    <button type="submit" class="btn btn-green">🔍 Terapkan</button>
-    <a href="?" class="btn btn-ghost">↺ Reset</a>
-
-    <div class="view-toggle" style="margin-left:auto">
-      <button type="button" class="vtoggle <?= ($_GET['view']??'card')==='card'?'active':'' ?>"
-        title="Kartu" onclick="setView('card')">▦</button>
-      <button type="button" class="vtoggle <?= ($_GET['view']??'card')==='table'?'active':'' ?>"
-        title="Tabel" onclick="setView('table')">☰</button>
-    </div>
-  </form>
-
-  <!-- JUMLAH HASIL -->
-  <div class="result-info">
-    Menampilkan <strong><?= count($tampil) ?></strong> dari <?= count($meja_billiard) ?> meja
-    <?= $filterTipe!=='semua' ? "· Tipe: <strong>$filterTipe</strong>" : '' ?>
-    <?= $filterStatus!=='semua' ? "· Status: <strong>".ucfirst($filterStatus)."</strong>" : '' ?>
-  </div>
-
-  <?php $viewMode = $_GET['view'] ?? 'card'; ?>
-
-  <!-- ======================================================
-       VIEW: KARTU
-       ====================================================== -->
-  <?php if ($viewMode === 'card'): ?>
-
-  <?php if (empty($tampil)): ?>
-  <div class="empty">
-    <div class="big">🎱</div>
-    <p>Tidak ada meja yang sesuai filter.</p>
-  </div>
-  <?php else: ?>
-
-  <div class="section-title">Daftar Meja Billiard</div>
-  <div class="meja-grid">
-    <?php foreach ($tampil as $m): ?>
-    <div class="meja-card">
-
-      <!-- TOP: nama + status -->
-      <div class="card-top">
-        <div>
-          <div class="meja-nama"><?= $m['nama'] ?></div>
-          <div class="meja-kode"><?= $m['kode'] ?> &nbsp;·&nbsp;
-            <span class="tipe-pill tipe-<?= $m['tipe'] ?>"><?= $m['tipe'] ?></span>
-          </div>
-        </div>
-        <span class="badge badge-<?= $m['status'] ?>"><?= labelStatus($m['status']) ?></span>
-      </div>
-
-      <!-- MID: info baris -->
-      <div class="card-mid">
-        <div class="info-row">
-          <span class="info-key">Ukuran</span>
-          <span class="info-val"><?= $m['ukuran'] ?></span>
-        </div>
-        <div class="info-row">
-          <span class="info-key">Kondisi</span>
-          <span class="info-val"><?= $m['kondisi'] ?></span>
-        </div>
-        <div class="info-row">
-          <span class="info-key">Harga / Jam</span>
-          <span class="info-val harga-besar">
-            <?= formatRupiah($m['harga_jam']) ?>
-            <span class="harga-satuan">/jam</span>
-          </span>
-        </div>
-      </div>
-
-      <!-- FASILITAS -->
-      <div class="fasilitas-wrap">
-        <div class="fasilitas-label">Fasilitas</div>
-        <div class="fasilitas-list">
-          <?php foreach ($m['fasilitas'] as $f): ?>
-          <span class="fas-tag"><?= $f ?></span>
-          <?php endforeach; ?>
-        </div>
-      </div>
-
-      <!-- BOTTOM: lokasi + tombol detail -->
-      <div class="card-bot">
-        <span class="lokasi-txt">📍 <?= $m['lokasi'] ?></span>
-        <a href="?detail=<?= $m['id'] ?>&tipe=<?= urlencode($filterTipe) ?>&status=<?= urlencode($filterStatus) ?>&sort=<?= urlencode($sortHarga) ?>&view=card"
-           class="btn btn-detail">Detail</a>
-      </div>
-
-    </div>
-    <?php endforeach; ?>
-  </div>
-
-  <?php endif; ?>
-
-  <!-- ======================================================
-       VIEW: TABEL
-       ====================================================== -->
-  <?php else: ?>
-
-  <div class="section-title">Daftar Meja Billiard — Tampilan Tabel</div>
-
-  <?php if (empty($tampil)): ?>
-  <div class="empty">
-    <div class="big">🎱</div>
-    <p>Tidak ada meja yang sesuai filter.</p>
-  </div>
-  <?php else: ?>
-
-  <div style="background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden">
-    <div class="tbl-wrap">
-      <table class="tbl">
+<!-- Tabel -->
+<div class="table-wrap">
+    <table class="table table-hover" style="margin:0">
         <thead>
-          <tr>
-            <th>Kode</th>
-            <th>Nama Meja</th>
-            <th>Tipe</th>
-            <th>Ukuran</th>
-            <th>Kondisi</th>
-            <th>Harga/Jam</th>
-            <th>Lokasi</th>
-            <th>Fasilitas</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
+            <tr>
+                <th>No.</th>
+                <th>Outlet</th>
+                <th>No. Meja</th>
+                <th>Kelas</th>
+                <th>Harga/Jam</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
         </thead>
         <tbody>
-          <?php foreach ($tampil as $m): ?>
-          <tr>
-            <td style="font-weight:700;color:var(--ink-mid)"><?= $m['kode'] ?></td>
-            <td style="font-weight:700"><?= $m['nama'] ?></td>
-            <td><span class="tipe-pill tipe-<?= $m['tipe'] ?>"><?= $m['tipe'] ?></span></td>
-            <td><?= $m['ukuran'] ?></td>
-            <td><?= $m['kondisi'] ?></td>
-            <td style="font-weight:700;color:var(--felt-mid)"><?= formatRupiah($m['harga_jam']) ?></td>
-            <td style="font-size:.8rem;color:var(--ink-mid)"><?= $m['lokasi'] ?></td>
-            <td>
-              <div style="display:flex;flex-wrap:wrap;gap:.25rem">
-                <?php foreach ($m['fasilitas'] as $f): ?>
-                <span class="fas-tag"><?= $f ?></span>
-                <?php endforeach; ?>
-              </div>
-            </td>
-            <td><span class="badge badge-<?= $m['status'] ?>"><?= labelStatus($m['status']) ?></span></td>
-            <td>
-              <a href="?detail=<?= $m['id'] ?>&view=table&tipe=<?= urlencode($filterTipe) ?>&status=<?= urlencode($filterStatus) ?>&sort=<?= urlencode($sortHarga) ?>"
-                 class="btn btn-detail">Detail</a>
-            </td>
-          </tr>
-          <?php endforeach; ?>
+            <?php if (empty($allTables)): ?>
+            <tr><td colspan="7" style="text-align:center;color:#555;padding:40px">Belum ada meja terdaftar.</td></tr>
+            <?php else: $no=1; foreach ($allTables as $t): ?>
+            <tr>
+                <td style="color:#555"><?= $no++ ?></td>
+                <td style="color:#fff;font-weight:600">
+                    <?php
+                    foreach ($arrOutlet as $ol) {
+                        if ($ol->outlet_id == $t->outlet_id) { echo htmlspecialchars($ol->outlet_name); break; }
+                    }
+                    ?>
+                </td>
+                <td><strong><?= htmlspecialchars($t->table_number) ?></strong></td>
+                <td>
+                    <?php
+                    $cc = $t->class_type == 'Regular Floor' ? 'chip-regular' : ($t->class_type == 'VIP Smoking' ? 'chip-vip' : 'chip-vvip');
+                    ?>
+                    <span class="class-chip <?= $cc ?>"><?= htmlspecialchars($t->class_type) ?></span>
+                </td>
+                <td style="color:#8bd100;font-weight:700">Rp <?= number_format($t->price_per_hour,0,',','.') ?></td>
+                <td>
+                    <?php
+                    $dc = $t->status == 'Available' ? 'dot-available' : ($t->status == 'Booked' ? 'dot-booked' : 'dot-maintenance');
+                    ?>
+                    <span class="status-dot"><span class="dot <?= $dc ?>"></span><?= htmlspecialchars($t->status) ?></span>
+                </td>
+                <td>
+                    <a class="btn-action btn-edit" href="#"
+                       onclick="openEdit(<?= $t->table_id ?>, '<?= htmlspecialchars($t->class_type) ?>', <?= $t->price_per_hour ?>, '<?= $t->status ?>'); return false;">
+                       ✎ Edit
+                    </a>
+                    <a class="btn-action btn-del"
+                       href="dashboardadmin.php?p=mejalist&action=delete&id=<?= $t->table_id ?>"
+                       onclick="return confirm('Hapus meja ini? Pastikan tidak ada booking aktif.')">
+                       ✕ Hapus
+                    </a>
+                </td>
+            </tr>
+            <?php endforeach; endif; ?>
         </tbody>
-      </table>
+    </table>
+</div>
+
+<!-- Modal: Tambah Meja -->
+<div class="modal fade modal-dark" id="modalAdd" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>➕ Tambah Meja Baru</h4>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <div class="mform-group">
+                        <label>Outlet</label>
+                        <select name="outlet_id" class="mform-control" required>
+                            <option value="">-- Pilih Outlet --</option>
+                            <?php foreach ($arrOutlet as $ol): ?>
+                            <option value="<?= $ol->outlet_id ?>"><?= htmlspecialchars($ol->outlet_name) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mform-group">
+                        <label>Nomor Meja</label>
+                        <input type="text" name="table_number" class="mform-control" placeholder="cth: A1, B2, VIP-1" required>
+                    </div>
+                    <div class="mform-group">
+                        <label>Kelas Meja</label>
+                        <select name="class_type" class="mform-control" required>
+                            <option value="Regular Floor">Regular Floor</option>
+                            <option value="VIP Smoking">VIP Smoking</option>
+                            <option value="VVIP">VVIP</option>
+                        </select>
+                    </div>
+                    <div class="mform-group">
+                        <label>Harga per Jam (Rp)</label>
+                        <input type="number" name="price_per_hour" class="mform-control" placeholder="35000" min="1000" step="1000" required>
+                    </div>
+                    <div class="mform-group">
+                        <label>Status Awal</label>
+                        <select name="status" class="mform-control">
+                            <option value="Available">Available</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end">
+                    <button type="button" class="btn-cancel-m" data-dismiss="modal">Batal</button>
+                    <button type="submit" name="btnAdd" class="btn-save">💾 Simpan Meja</button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
+</div>
 
-  <?php endif; ?>
-  <?php endif; ?>
-
-</div><!-- /wrap -->
+<!-- Modal: Edit Meja -->
+<div class="modal fade modal-dark" id="modalEdit" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>✎ Edit Meja</h4>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="table_id" id="editTableId">
+                    <div class="mform-group">
+                        <label>Kelas Meja</label>
+                        <select name="class_type" id="editClassType" class="mform-control" required>
+                            <option value="Regular Floor">Regular Floor</option>
+                            <option value="VIP Smoking">VIP Smoking</option>
+                            <option value="VVIP">VVIP</option>
+                        </select>
+                    </div>
+                    <div class="mform-group">
+                        <label>Harga per Jam (Rp)</label>
+                        <input type="number" name="price_per_hour" id="editPrice" class="mform-control" min="1000" step="1000" required>
+                    </div>
+                    <div class="mform-group">
+                        <label>Status</label>
+                        <select name="status" id="editStatus" class="mform-control">
+                            <option value="Available">Available</option>
+                            <option value="Booked">Booked</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end">
+                    <button type="button" class="btn-cancel-m" data-dismiss="modal">Batal</button>
+                    <button type="submit" name="btnUpdate" class="btn-save">💾 Update Meja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
-function setView(v) {
-    document.getElementById('viewInput').value = v;
-    document.querySelector('form.controls').submit();
+function openEdit(id, classType, price, status) {
+    document.getElementById('editTableId').value  = id;
+    document.getElementById('editClassType').value = classType;
+    document.getElementById('editPrice').value     = price;
+    document.getElementById('editStatus').value    = status;
+    $('#modalEdit').modal('show');
 }
 </script>
-
-</body>
-</html>

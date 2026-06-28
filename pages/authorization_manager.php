@@ -5,8 +5,8 @@ if (!isset($_SESSION["role"])) {
     echo "<script>alert('Akses Ditolak! Harap login terlebih dahulu.');</script>";
     echo '<script>window.location="index.php?p=login";</script>';
     exit();
-} elseif ($_SESSION["role"] != 'admin') {
-    echo "<script>alert('Hanya akun Admin yang dapat mengakses halaman manajemen ini!');</script>";
+} elseif (!in_array($_SESSION["role"], ['admin','manager'])) {
+    echo "<script>alert('Hanya akun Manager atau Admin yang dapat mengakses halaman ini!');</script>";
     echo '<script>window.location="index.php";</script>';
     exit();
 }
