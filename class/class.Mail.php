@@ -1,16 +1,7 @@
 <?php
-/**
- * class.Mail.php — Afterhour Email Service
- * Menggunakan PHPMailer via Composer.
- * Install: composer require phpmailer/phpmailer
- *
- * Ubah 4 baris bertanda [CONFIG] sesuai akun Gmail + App Password Anda.
- */
-
-// Pastikan autoload composer ada; jika tidak, tampilkan error informatif
 $autoloadPath = dirname(__FILE__) . '/../vendor/autoload.php';
 if (!file_exists($autoloadPath)) {
-    // Fallback: gunakan PHP mail() native jika PHPMailer belum diinstall
+    
     class Mail {
         public static function SendMail($to, $name, $subject, $message) {
             $headers  = "MIME-Version: 1.0\r\n";
@@ -93,7 +84,7 @@ if (!file_exists($autoloadPath)) {
             </div>";
         }
     }
-    return; // stop parsing, class sudah defined
+    return; 
 }
 
 require_once $autoloadPath;
@@ -102,16 +93,11 @@ use PHPMailer\PHPMailer\Exception;
 
 class Mail
 {
-    // ─── [CONFIG] Ganti 4 baris ini sesuai akun Gmail Anda ───────
-    const SMTP_USERNAME  = 'ontaxp@gmail.com';        // [CONFIG]
-    const SMTP_PASSWORD  = 'azrh ocpo oxuo jhma';     // [CONFIG] App Password Gmail
-    const SMTP_FROM      = 'ontaxp@gmail.com';        // [CONFIG]
-    const SMTP_FROM_NAME = 'Afterhour Billiard & Lounge'; // [CONFIG]
-    // ─────────────────────────────────────────────────────────────
+    const SMTP_USERNAME  = 'ontaxp@gmail.com';      
+    const SMTP_PASSWORD  = 'azrh ocpo oxuo jhma';     
+    const SMTP_FROM      = 'ontaxp@gmail.com';        
+    const SMTP_FROM_NAME = 'Afterhour Billiard & Lounge'; 
 
-    /**
-     * Kirim satu email HTML
-     */
     public static function SendMail($to, $name, $subject, $message)
     {
         $mail = new PHPMailer(true);
@@ -161,25 +147,18 @@ class Mail
         return $success;
     }
 
-    /**
-     * Konfirmasi booking ke customer
-     */
     public static function SendBookingConfirmation($user_email, $user_name, $booking_data)
     {
         $body = self::_buildBookingBody($user_name, $booking_data);
         return self::SendMail($user_email, $user_name, '✅ Konfirmasi Reservasi Afterhour', $body);
     }
 
-    /**
-     * Email selamat datang setelah register
-     */
     public static function SendWelcome($email, $name)
     {
         $body = self::_buildWelcomeBody($name);
         return self::SendMail($email, $name, '🎱 Selamat Bergabung di Afterhour!', $body);
     }
 
-    /* ═══════════════ TEMPLATE BUILDERS ═══════════════ */
 
     private static function _buildDiscountBody($name, $discount)
     {

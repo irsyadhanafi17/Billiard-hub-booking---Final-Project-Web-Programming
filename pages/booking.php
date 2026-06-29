@@ -32,14 +32,14 @@ if (isset($_POST['btnSubmit'])) {
 
     echo "<script>alert('" . addslashes($objBooking->message) . "');</script>";
     if ($objBooking->hasil) {
-        // Kirim email konfirmasi (dapatkan nama outlet untuk email)
+        
         $outletObj = new Outlet();
         $arrAllOutlets = $outletObj->SelectAllOutlet();
         $outletName = '';
         foreach ($arrAllOutlets as $ol) {
             if ($ol->outlet_id == $selected_outlet) { $outletName = $ol->outlet_name; break; }
         }
-        // Ambil info meja
+        
         $tableInfo = $arrTable;
         $tableNumber = ''; $classType = '';
         foreach ($tableInfo as $t) {
@@ -106,7 +106,6 @@ if (isset($_POST['btnSubmit'])) {
 
     <form action="" method="post" id="bookingForm">
 
-        <!-- STEP 1: Pilih Outlet -->
         <div class="form-card">
             <div class="form-card-title">01 &mdash; Pilih Lokasi Outlet</div>
             <div class="fgroup">
@@ -127,7 +126,6 @@ if (isset($_POST['btnSubmit'])) {
         </div>
 
         <?php if (!empty($arrTable)): ?>
-        <!-- STEP 2: Pilih Meja -->
         <div class="form-card">
             <div class="form-card-title">02 &mdash; Pilih Meja</div>
             <div class="table-grid" id="tableGrid">
@@ -150,7 +148,6 @@ if (isset($_POST['btnSubmit'])) {
         </div>
         <?php endif; ?>
 
-        <!-- STEP 3: Jadwal -->
         <div class="form-card">
             <div class="form-card-title">03 &mdash; Tentukan Jadwal & Durasi</div>
             <div class="row">
@@ -194,7 +191,6 @@ if (isset($_POST['btnSubmit'])) {
                 </div>
             </div>
 
-            <!-- Preview Harga -->
             <div class="price-preview" id="pricePreview">
                 <div class="label-p">Estimasi Total Tagihan</div>
                 <div class="amount" id="priceAmount">Rp 0</div>

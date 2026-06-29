@@ -1,7 +1,6 @@
 <?php
 if (!isset($_SESSION)) { session_start(); }
 
-// Jika sudah login, redirect langsung
 if (isset($_SESSION['role'])) {
     if ($_SESSION['role'] === 'admin') { header('Location: dashboardadmin.php'); exit(); }
     if ($_SESSION['role'] === 'manager') { header('Location: dashboardmanager.php'); exit(); }
@@ -28,7 +27,6 @@ if (isset($_POST['btnLogin'])) {
             $isMatch    = $isHash ? password_verify($password, $storedPass) : ($password === $storedPass);
 
             if ($isMatch) {
-                // Auto-upgrade plain password ke hash
                 if (!$isHash) {
                     $objUser->UpgradePassword(password_hash($password, PASSWORD_DEFAULT));
                 }

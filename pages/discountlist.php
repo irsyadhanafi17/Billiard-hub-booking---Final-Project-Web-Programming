@@ -6,7 +6,6 @@ require_once(__DIR__.'/../class/class.Mail.php');
 $objDiscount = new Discount();
 $objUser     = new User();
 
-// Tambah diskon
 if (isset($_POST['btnAdd'])) {
     $objDiscount->title        = $_POST['title'];
     $objDiscount->description  = $_POST['description'];
@@ -16,7 +15,6 @@ if (isset($_POST['btnAdd'])) {
     $objDiscount->is_active    = isset($_POST['is_active']) ? 1 : 0;
     $objDiscount->AddDiscount();
 
-    // Broadcast email ke semua customer jika aktif
     if ($objDiscount->hasil && $objDiscount->is_active) {
         $customers = $objUser->SelectAllCustomers();
         $sent = @Mail::BroadcastDiscount($customers, $objDiscount);
@@ -27,7 +25,6 @@ if (isset($_POST['btnAdd'])) {
     echo '<script>window.location="dashboardadmin.php?p=discountlist";</script>'; exit();
 }
 
-// Update diskon
 if (isset($_POST['btnUpdate'])) {
     $objDiscount->discount_id  = $_POST['discount_id'];
     $objDiscount->title        = $_POST['title'];
@@ -41,7 +38,6 @@ if (isset($_POST['btnUpdate'])) {
     echo '<script>window.location="dashboardadmin.php?p=discountlist";</script>'; exit();
 }
 
-// Hapus diskon
 if (isset($_GET['action']) && $_GET['action'] == 'delete') {
     $objDiscount->discount_id = (int)$_GET['id'];
     $objDiscount->DeleteDiscount();
@@ -49,7 +45,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
     echo '<script>window.location="dashboardadmin.php?p=discountlist";</script>'; exit();
 }
 
-// Broadcast ulang diskon yang sudah ada
 if (isset($_GET['action']) && $_GET['action'] == 'broadcast') {
     $objDiscount->SelectOneDiscount((int)$_GET['id']);
     if ($objDiscount->hasil) {
@@ -166,7 +161,6 @@ $today = date('Y-m-d');
 </div>
 <?php endif; ?>
 
-<!-- Modal Tambah -->
 <div class="modal fade modal-dark" id="modalAdd" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -214,7 +208,6 @@ $today = date('Y-m-d');
     </div>
 </div>
 
-<!-- Modal Edit -->
 <div class="modal fade modal-dark" id="modalEdit" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

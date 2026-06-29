@@ -24,7 +24,7 @@ $totalUsers   = count($objUser->SelectAllUsers());
     <style>
         *{box-sizing:border-box}
         body{background:#070103;font-family:'DM Sans',sans-serif;margin:0;padding:0;color:#EDE8DC}
-        /* Sidebar */
+        
         .sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:#0d0208;border-right:1px solid #2f0618;z-index:100;display:flex;flex-direction:column;transition:width 0.3s}
         .sidebar-brand{padding:24px 20px;border-bottom:1px solid #2f0618}
         .sidebar-brand img{height:36px;width:auto;object-fit:contain}
@@ -42,13 +42,13 @@ $totalUsers   = count($objUser->SelectAllUsers());
         .user-role{font-size:10px;color:#8A7E6C;letter-spacing:1px;text-transform:uppercase}
         .btn-logout{display:flex;align-items:center;gap:8px;width:100%;background:#2f0618;border:1px solid #4f1030;color:#e81b7b;font-size:12px;font-weight:700;padding:9px 14px;border-radius:8px;text-decoration:none;transition:all 0.2s;letter-spacing:0.5px;text-transform:uppercase}
         .btn-logout:hover{background:#e81b7b;color:#fff;text-decoration:none}
-        /* Main content */
+        
         .main-content{margin-left:240px;min-height:100vh;background:#070103}
         .topbar{background:#0d0208;border-bottom:1px solid #2f0618;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
         .topbar-title{font-family:'Boldonse',sans-serif;font-size:18px;color:#fff;letter-spacing:0.04em}
         .topbar-breadcrumb{font-size:12px;color:#8A7E6C}
         .page-body{padding:28px 32px}
-        /* Dashboard cards */
+        
         .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px}
         .dash-card{background:#1f0410;border:1px solid #2f0618;border-radius:14px;padding:22px;transition:border-color 0.3s}
         .dash-card:hover{border-color:#8bd100}
@@ -58,7 +58,7 @@ $totalUsers   = count($objUser->SelectAllUsers());
         .dash-card .dc-val.green{color:#8bd100}
         .dash-card .dc-val.yellow{color:#ffaa00}
         .dash-card .dc-val.blue{color:#5aacff}
-        /* Quick actions */
+        
         .quick-actions{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:28px}
         .qa-btn{background:#1f0410;border:1px solid #2f0618;border-radius:12px;padding:20px;text-align:center;text-decoration:none;transition:all 0.25s;cursor:pointer;display:block}
         .qa-btn:hover{border-color:#8bd100;background:#0d1a00;text-decoration:none;transform:translateY(-2px)}

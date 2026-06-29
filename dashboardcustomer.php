@@ -132,7 +132,6 @@ $paidCount       = count(array_filter($myBookings, fn($b) => $b->payment_status 
                     <p style="color:#8A7E6C;font-size:13px;margin:0">Selamat datang di Afterhour Member Area. Siap bermain hari ini?</p>
                 </div>
 
-                <!-- Stats -->
                 <div class="dash-grid">
                     <div class="dash-card">
                         <div class="dc-icon">📋</div>
@@ -151,7 +150,6 @@ $paidCount       = count(array_filter($myBookings, fn($b) => $b->payment_status 
                     </div>
                 </div>
 
-                <!-- Promo aktif -->
                 <?php if (!empty($activeDiscounts)): $d = $activeDiscounts[0]; ?>
                 <div class="promo-banner">
                     <div class="pb-pct"><?= (int)$d->discount_pct ?>%</div>
@@ -162,7 +160,6 @@ $paidCount       = count(array_filter($myBookings, fn($b) => $b->payment_status 
                 </div>
                 <?php endif; ?>
 
-                <!-- CTA -->
                 <div style="background:#1f0410;border:1px solid #2f0618;border-radius:14px;padding:28px;text-align:center;margin-top:8px">
                     <div style="font-size:40px;margin-bottom:12px">🎱</div>
                     <h4 style="color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:20px;margin:0 0 8px">Reservasi Meja Sekarang</h4>

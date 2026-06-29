@@ -114,7 +114,6 @@ $allOutlets = $objOutlet->SelectAllOutlet();
     <?php endforeach; ?>
 </div>
 
-<!-- Modal Tambah -->
 <div class="modal fade modal-dark" id="modalAdd" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -148,7 +147,6 @@ $allOutlets = $objOutlet->SelectAllOutlet();
     </div>
 </div>
 
-<!-- Modal Edit -->
 <div class="modal fade modal-dark" id="modalEdit" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

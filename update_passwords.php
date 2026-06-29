@@ -1,22 +1,9 @@
 <?php
-/**
- * TOOL SATU KALI PAKAI — Update Password Plain Text ke BCrypt
- * 
- * Jalankan SEKALI via browser: http://localhost/afterhour/update_passwords.php
- * Setelah selesai, HAPUS file ini dari server!
- * 
- * Script ini akan:
- * 1. Scan semua user di database
- * 2. Jika password bukan bcrypt, tanya apakah mau di-update
- * 3. Set semua password non-hash menjadi sama dengan plain text-nya (di-hash)
- */
-
 $koneksi = mysqli_connect("localhost", "root", "", "afterhour_db");
 if (!$koneksi) { die("Koneksi gagal: " . mysqli_connect_error()); }
 
 $action = $_GET['action'] ?? '';
 
-// Jika ada request update spesifik
 if ($action === 'update' && isset($_GET['uid']) && isset($_GET['newpwd'])) {
     $uid     = (int)$_GET['uid'];
     $newpwd  = $_GET['newpwd'];
@@ -27,7 +14,6 @@ if ($action === 'update' && isset($_GET['uid']) && isset($_GET['newpwd'])) {
     }
 }
 
-// Ambil semua user
 $res   = mysqli_query($koneksi, "SELECT userid, email, name, role, password FROM users ORDER BY userid");
 $users = [];
 while ($row = mysqli_fetch_assoc($res)) { $users[] = $row; }

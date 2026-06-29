@@ -47,7 +47,6 @@ class User extends Connection
         }
     }
 
-    /* ── Admin: semua user ─────────────────────────────── */
     public function SelectAllUsers()
     {
         $sql  = "SELECT * FROM users ORDER BY created_at DESC";
@@ -64,7 +63,6 @@ class User extends Connection
         return $arr;
     }
 
-    /* ── Manager: list customer per outlet ─────────────── */
     public function SelectCustomersByOutlet($outlet_id)
     {
         $oid = (int)$outlet_id;
@@ -85,7 +83,6 @@ class User extends Connection
         return $arr;
     }
 
-    /* ── Semua customer (untuk broadcast email) ─────────── */
     public function SelectAllCustomers()
     {
         $sql = "SELECT * FROM users WHERE role='customer' ORDER BY name ASC";
@@ -101,7 +98,6 @@ class User extends Connection
         return $arr;
     }
 
-    /* ── Auto-upgrade plain password ke bcrypt setelah login ── */
     public function UpgradePassword($hashedPassword)
     {
         $uid  = (int)$this->userid;
@@ -109,7 +105,6 @@ class User extends Connection
         mysqli_query($this->connection, "UPDATE users SET password='$hash' WHERE userid=$uid");
     }
 
-    /* ── Cek email sudah dipakai atau belum (return bool) ── */
     public function CheckEmailExists($inputEmail)
     {
         $email = mysqli_real_escape_string($this->connection, $inputEmail);

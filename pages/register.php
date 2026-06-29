@@ -34,7 +34,6 @@ if (isset($_POST['btnRegister'])) {
             $objUser->role     = 'customer';
             $objUser->avatar   = '';
 
-            // Handle upload avatar (opsional)
             if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
                 $allowedTypes = ['image/jpeg','image/png','image/gif','image/webp'];
                 $maxSize      = 2 * 1024 * 1024;
@@ -57,9 +56,7 @@ if (isset($_POST['btnRegister'])) {
                 $objUser->AddUser();
                 if ($objUser->hasil) {
                     @Mail::SendWelcome($email, $name);
-                    // Auto login setelah register
                     $_SESSION['userid'] = $objUser->userid ?? 0;
-                    // Get userid dari DB
                     $newUser = new User();
                     $newUser->ValidateEmail($email);
                     if ($newUser->hasil) {

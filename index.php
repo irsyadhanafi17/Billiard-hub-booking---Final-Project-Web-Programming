@@ -2,7 +2,6 @@
 if (!isset($_SESSION)) { session_start(); }
 $page = isset($_GET['p']) ? $_GET['p'] : 'home';
 
-// Handle login & register SEBELUM output HTML apapun
 if ($page === 'login') {
     include('pages/login.php');
     exit();
@@ -22,7 +21,7 @@ if ($page === 'register') {
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Boldonse&display=swap" rel="stylesheet">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
-        /* ── RESET & BASE ───────────────────────────────── */
+        
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
@@ -33,7 +32,6 @@ if ($page === 'register') {
         }
         img { max-width: 100%; display: block; }
 
-        /* ── NAVBAR ─────────────────────────────────────── */
         .ah-navbar {
             position: fixed; top: 0; left: 0; right: 0; z-index: 999;
             padding: 18px 48px;
@@ -77,7 +75,6 @@ if ($page === 'register') {
         }
         .btn-nav-book:hover { background: #fff; transform: translateY(-1px); text-decoration: none; color: #000; }
 
-        /* ── HERO ───────────────────────────────────────── */
         .hero {
             position: relative;
             height: 100vh; min-height: 600px;
@@ -140,7 +137,7 @@ if ($page === 'register') {
             transition: all 0.3s;
         }
         .btn-hero-member:hover { border-color: #8A7E6C; color: #fff; text-decoration: none; }
-        /* Hero dots */
+        
         .hero-dots {
             position: absolute; bottom: 32px; right: 72px; z-index: 3;
             display: flex; gap: 8px;
@@ -151,7 +148,6 @@ if ($page === 'register') {
         }
         .hdot.active { background: #8bd100; width: 20px; border-radius: 3px; }
 
-        /* ── SECTION GENERIC ────────────────────────────── */
         .section { padding: 88px 0; }
         .section-label {
             font-size: 11px; font-weight: 600; letter-spacing: 4px;
@@ -166,7 +162,6 @@ if ($page === 'register') {
         }
         .section-desc { font-size: 15px; color: #8A7E6C; line-height: 1.7; max-width: 540px; }
 
-        /* ── PHOTO GRID ─────────────────────────────────── */
         .photo-grid-section { background: #070103; padding: 80px 0; }
         .photo-grid {
             display: grid;
@@ -192,7 +187,6 @@ if ($page === 'register') {
         .pg-item:hover .pg-overlay { opacity: 1; }
         .pg-overlay span { color: #8bd100; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* ── KELAS MEJA ─────────────────────────────────── */
         .class-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 40px; }
         .class-card {
             background: #1f0410; border: 1px solid #2f0618; border-radius: 16px;
@@ -215,7 +209,6 @@ if ($page === 'register') {
         .class-card-price { font-family:'Boldonse',sans-serif; font-size:24px; color:#8bd100; }
         .class-card-price span { font-family:'DM Sans',sans-serif; font-size:13px; color:#555; font-weight:400; }
 
-        /* ── OUTLET LIST ────────────────────────────────── */
         .outlet-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:40px; }
         .outlet-card {
             border-radius:14px; overflow:hidden; position:relative;
@@ -233,7 +226,6 @@ if ($page === 'register') {
         .outlet-card-loc { font-size:12px; color:#8A7E6C; display:flex; align-items:center; gap:6px; }
         .outlet-card-loc .glyphicon { color:#e81b7b; font-size:11px; }
 
-        /* ── PROMO STRIP ────────────────────────────────── */
         .promo-section { background:#0d0208; border-top:1px solid #2f0618; border-bottom:1px solid #2f0618; padding:72px 0; }
         .promo-inner { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
         .promo-cards { display:flex; flex-direction:column; gap:14px; }
@@ -253,7 +245,6 @@ if ($page === 'register') {
         .promo-mini h5 { color:#fff; font-weight:700; font-size:15px; margin:0 0 4px; }
         .promo-mini p { color:#8A7E6C; font-size:12px; margin:0; line-height:1.5; }
 
-        /* ── STATS BAR ──────────────────────────────────── */
         .stats-bar {
             display:grid; grid-template-columns:repeat(4,1fr);
             gap:0; border:1px solid #2f0618; border-radius:14px; overflow:hidden;
@@ -268,7 +259,6 @@ if ($page === 'register') {
         .stat-num { font-family:'Boldonse',sans-serif; font-size:36px; color:#8bd100; line-height:1; margin-bottom:6px; }
         .stat-lbl { font-size:12px; color:#8A7E6C; letter-spacing:1px; text-transform:uppercase; }
 
-        /* ── CTA BANNER ─────────────────────────────────── */
         .cta-section {
             position:relative; overflow:hidden;
             padding:100px 0; text-align:center;
@@ -283,7 +273,6 @@ if ($page === 'register') {
         .cta-title { font-family:'Boldonse',sans-serif; font-size:clamp(28px,5vw,56px); color:#fff; margin-bottom:14px; }
         .cta-sub { font-size:16px; color:#8A7E6C; margin-bottom:36px; }
 
-        /* ── FOOTER ─────────────────────────────────────── */
         .ah-footer {
             background:#070103; border-top:1px solid #2f0618;
             padding:48px 0 28px;
@@ -297,7 +286,6 @@ if ($page === 'register') {
         .footer-bottom { border-top:1px solid #1a0a12; padding-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
         .footer-copy { font-size:12px; color:#3a3a3a; }
 
-        /* ── UTILITY ─────────────────────────────────────── */
         .container-xl { max-width:1200px; margin:0 auto; padding:0 48px; }
         @media(max-width:991px) {
             .ah-navbar { padding:16px 24px; }
@@ -317,7 +305,6 @@ if ($page === 'register') {
 <body>
 
 
-<!-- ───────────────── NAVBAR ───────────────── -->
 <nav class="ah-navbar" id="mainNav">
     <a href="index.php" class="nav-logo">AFTER<span>HOUR</span></a>
     <div class="nav-links">
@@ -349,7 +336,6 @@ if ($page === 'register') {
     </div>
 </nav>
 
-<!-- ───────────────── HERO SLIDER ───────────── -->
 <section class="hero">
     <div class="hero-slides" id="heroSlides">
         <div class="hero-slide active" style="background-image:url('assets/stocks/Afterhour (2).png')"></div>
@@ -391,7 +377,6 @@ if ($page === 'register') {
     </div>
 </section>
 
-<!-- ───────────────── STATS BAR ─────────────── -->
 <div class="container-xl">
     <div class="stats-bar">
         <div class="stat-item"><div class="stat-num">6</div><div class="stat-lbl">Outlet di Jakarta</div></div>
@@ -401,7 +386,6 @@ if ($page === 'register') {
     </div>
 </div>
 
-<!-- ───────────────── FOTO GALERI ────────────── -->
 <section class="photo-grid-section" id="gallery">
     <div class="container-xl">
         <div class="section-label">Galeri</div>
@@ -409,7 +393,6 @@ if ($page === 'register') {
         <p class="section-desc" style="margin-bottom:32px">Rasakan atmosfer premium yang memadukan keseruan billiard dengan kenyamanan lounge eksklusif.</p>
 
         <div class="photo-grid">
-            <!-- Row 1 -->
             <div class="pg-item span-row2">
                 <img src="assets/stocks/Afterhour (2).png" alt="Afterhour Billiard">
                 <div class="pg-overlay"><span>Meja Premium</span></div>
@@ -426,7 +409,7 @@ if ($page === 'register') {
                 <img src="assets/stocks/Afterhour (5).png" alt="Billiard Balls">
                 <div class="pg-overlay"><span>Siap Tempur</span></div>
             </div>
-            <!-- Row 2 -->
+            
             <div class="pg-item">
                 <img src="assets/stocks/Afterhour (3).png" alt="Playing">
                 <div class="pg-overlay"><span>Aksi Seru</span></div>
@@ -441,7 +424,6 @@ if ($page === 'register') {
             </div>
         </div>
 
-        <!-- Row 3: bottom strip -->
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px">
             <?php for ($i=6; $i<=10; $i++): ?>
             <div class="pg-item" style="height:140px;border-radius:8px">
@@ -453,7 +435,6 @@ if ($page === 'register') {
     </div>
 </section>
 
-<!-- ───────────────── KELAS MEJA ─────────────── -->
 <section class="section" id="kelas" style="background:#0d0208;border-top:1px solid #2f0618">
     <div class="container-xl">
         <div class="section-label">Pilihan Meja</div>
@@ -461,7 +442,7 @@ if ($page === 'register') {
         <p class="section-desc">Dari casual hingga ultra-premium, Afterhour menyediakan tiga kelas meja untuk memenuhi kebutuhan Anda.</p>
 
         <div class="class-cards">
-            <!-- Regular -->
+            
             <div class="class-card">
                 <div class="class-card-img">
                     <img src="assets/stocks/Afterhour (7).png" alt="Regular Floor">
@@ -473,7 +454,7 @@ if ($page === 'register') {
                     <div class="class-card-price">Rp 35.000 <span>/ jam</span></div>
                 </div>
             </div>
-            <!-- VIP -->
+            
             <div class="class-card">
                 <div class="class-card-img">
                     <img src="assets/stocks/Afterhour (8).png" alt="VIP Smoking">
@@ -485,7 +466,7 @@ if ($page === 'register') {
                     <div class="class-card-price">Rp 60.000 <span>/ jam</span></div>
                 </div>
             </div>
-            <!-- VVIP -->
+    
             <div class="class-card" style="border-color:#3a1a00">
                 <div class="class-card-img">
                     <img src="assets/stocks/Afterhour (11).png" alt="VVIP">
@@ -501,7 +482,6 @@ if ($page === 'register') {
     </div>
 </section>
 
-<!-- ───────────────── OUTLET ─────────────────── -->
 <section class="section" id="outlet">
     <div class="container-xl">
         <div class="section-label">Lokasi Kami</div>
@@ -534,9 +514,7 @@ if ($page === 'register') {
     </div>
 </section>
 
-<!-- ───────────────── PROMO ──────────────────── -->
 <?php
-// Tampilkan promo aktif dari database
 require_once('class/class.Discount.php');
 $objDiscount    = new Discount();
 $activeDiscounts= $objDiscount->SelectActiveDiscounts();
@@ -574,7 +552,6 @@ if (!empty($activeDiscounts)):
 </section>
 <?php endif; ?>
 
-<!-- ───────────────── CTA SECTION ────────────── -->
 <section class="cta-section">
     <div class="cta-bg"></div>
     <div class="cta-content container-xl">
@@ -590,7 +567,6 @@ if (!empty($activeDiscounts)):
     </div>
 </section>
 
-<!-- ───────────────── FOOTER ─────────────────── -->
 <footer class="ah-footer">
     <div class="container-xl">
         <div class="footer-grid">
@@ -630,14 +606,12 @@ if (!empty($activeDiscounts)):
 </footer>
 
 <script>
-/* ── Navbar scroll effect ──────────────────── */
 window.addEventListener('scroll', function() {
     var nav = document.getElementById('mainNav');
     if (window.scrollY > 60) { nav.classList.add('scrolled'); }
     else { nav.classList.remove('scrolled'); }
 });
 
-/* ── Hero Slider ───────────────────────────── */
 var slides     = document.querySelectorAll('.hero-slide');
 var dots       = document.querySelectorAll('.hdot');
 var current    = 0;

@@ -116,7 +116,6 @@ $revenue = $outletId ? $objBooking->SumRevenue($outletId) : 0;
             case 'bookinglist':
                 include('pages/manager_bookinglist.php'); break;
             case 'mejalist':
-                // Meja di outlet manager
                 require_once('class/class.BilliardTable.php');
                 $objTable = new BilliardTable();
                 $tables   = $outletId ? $objTable->SelectAllTablesByOutlet($outletId) : [];

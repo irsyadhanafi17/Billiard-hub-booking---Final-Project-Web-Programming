@@ -21,7 +21,6 @@ class Booking extends Connection
         $time  = mysqli_real_escape_string($this->connection,$this->start_time);
         $dur   = (int)$this->duration_hours;
 
-        // Hitung harga
         $qp  = "SELECT price_per_hour FROM billiard_tables WHERE table_id=$tid";
         $res = mysqli_query($this->connection,$qp);
         $row = mysqli_fetch_assoc($res);
@@ -102,7 +101,6 @@ class Booking extends Connection
         $this->message = $this->hasil ? 'Booking dibatalkan.' : 'Gagal membatalkan booking!';
     }
 
-    /* ── Stats untuk dashboard ─────────────────────────── */
     public function CountByStatus($status, $outlet_id=null)
     {
         $s   = mysqli_real_escape_string($this->connection,$status);
@@ -132,7 +130,6 @@ class Booking extends Connection
         return (float)$row['rev'];
     }
 
-    /* ── Helper hydrate ─────────────────────────────────── */
     private function _hydrateAll($res)
     {
         $arr = [];

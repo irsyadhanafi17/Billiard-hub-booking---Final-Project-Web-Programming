@@ -6,7 +6,6 @@ $objTable  = new BilliardTable();
 $objOutlet = new Outlet();
 $arrOutlet = $objOutlet->SelectAllOutlet();
 
-// Handle actions
 if (isset($_POST['btnAdd'])) {
     $objTable->outlet_id      = $_POST['outlet_id'];
     $objTable->table_number   = $_POST['table_number'];
@@ -91,7 +90,6 @@ $allTables    = $filterOutlet ? $objTable->SelectAllTablesByOutlet($filterOutlet
     </button>
 </div>
 
-<!-- Filter Outlet -->
 <div class="filter-bar">
     <select onchange="window.location='dashboardadmin.php?p=mejalist&outlet='+this.value">
         <option value="0" <?= !$filterOutlet ? 'selected' : '' ?>>Semua Outlet</option>
@@ -102,7 +100,6 @@ $allTables    = $filterOutlet ? $objTable->SelectAllTablesByOutlet($filterOutlet
     <span style="color:#555;font-size:13px"><?= count($allTables) ?> meja ditemukan</span>
 </div>
 
-<!-- Tabel -->
 <div class="table-wrap">
     <table class="table table-hover" style="margin:0">
         <thead>
@@ -160,7 +157,6 @@ $allTables    = $filterOutlet ? $objTable->SelectAllTablesByOutlet($filterOutlet
     </table>
 </div>
 
-<!-- Modal: Tambah Meja -->
 <div class="modal fade modal-dark" id="modalAdd" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -211,7 +207,6 @@ $allTables    = $filterOutlet ? $objTable->SelectAllTablesByOutlet($filterOutlet
     </div>
 </div>
 
-<!-- Modal: Edit Meja -->
 <div class="modal fade modal-dark" id="modalEdit" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
