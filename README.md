@@ -17,44 +17,70 @@ Sistem reservasi meja billiard berbasis PHP untuk **Afterhour Billiard & Lounge*
 ## 🏗️ Struktur Project
 
 ```
-afterhour/
+AFTERHOUR/
 ├── assets/
 │   ├── logo/
-│   │   └── Afterhour.png          ← Logo brand
+│   │   └── Afterhour.png                  ← Logo aplikasi
 │   └── stocks/
 │       ├── Afterhour (1).png
-│       ├── ...
-│       └── Afterhour (12).png     ← Foto outlet (12 file)
+│       ├── Afterhour (2).png
+│       ├── Afterhour (3).png
+│       ├── Afterhour (4).png
+│       ├── Afterhour (5).png
+│       ├── Afterhour (6).png
+│       ├── Afterhour (7).png
+│       ├── Afterhour (8).png
+│       ├── Afterhour (9).png
+│       ├── Afterhour (10).png
+│       ├── Afterhour (11).png
+│       └── Afterhour (12).png             ← Foto outlet
+│
 ├── class/
-│   ├── class.Connection.php       ← Koneksi OOP
-│   ├── class.User.php             ← CRUD user & customer query
-│   ├── class.Outlet.php           ← CRUD outlet
-│   ├── class.BilliardTable.php    ← CRUD meja billiard
-│   ├── class.Booking.php          ← CRUD booking + stats
-│   ├── class.Discount.php         ← CRUD promo/diskon
-│   └── class.Mail.php             ← Email service (PHPMailer)
+│   ├── .htaccess
+│   ├── class.Connection.php               ← Koneksi database (OOP)
+│   ├── class.User.php                     ← CRUD user, login, register
+│   ├── class.Outlet.php                   ← CRUD outlet
+│   ├── class.BilliardTable.php            ← CRUD meja billiard
+│   ├── class.Booking.php                  ← CRUD booking & riwayat booking
+│   ├── class.Discount.php                 ← CRUD promo/diskon
+│   └── class.Mail.php                     ← Email menggunakan PHPMailer
+│
 ├── db/
-│   └── afterhour.sql              ← Schema + seed data
+│   └── afterhour.sql                      ← Database beserta data awal
+│
 ├── pages/
-│   ├── authorization_admin.php
-│   ├── authorization_manager.php
-│   ├── login.php
-│   ├── register.php
-│   ├── booking.php                ← Form booking customer
-│   ├── mybookings.php             ← Riwayat booking + promo
-│   ├── bookinglist.php            ← Admin: semua booking
-│   ├── mejalist.php               ← Admin: CRUD meja
-│   ├── outletlist.php             ← Admin: CRUD outlet
-│   ├── discountlist.php           ← Admin: CRUD diskon + broadcast email
-│   ├── userlist.php               ← Admin: data semua user
-│   └── manager_bookinglist.php    ← Manager: booking outlet-nya
-├── uploads/                       ← Foto avatar user
-├── index.php                      ← Landing page + login/register
-├── dashboardadmin.php             ← Dashboard Admin (sidebar)
-├── dashboardmanager.php           ← Dashboard Manager (sidebar)
-├── dashboardcustomer.php          ← Dashboard Customer (sidebar)
-├── logout.php
-└── inc.koneksi.php                ← Koneksi prosedural
+│   ├── authorization_admin.php            ← Middleware Admin
+│   ├── authorization_manager.php          ← Middleware Manager
+│   ├── login.php                          ← Form Login
+│   ├── register.php                       ← Form Registrasi
+│   ├── booking.php                        ← Form Booking Customer
+│   ├── mybookings.php                     ← Riwayat Booking Customer
+│   ├── bookinglist.php                    ← Daftar Booking (Admin)
+│   ├── manager_bookinglist.php            ← Daftar Booking (Manager)
+│   ├── mejalist.php                       ← CRUD Meja Billiard
+│   ├── outletlist.php                     ← CRUD Outlet
+│   ├── discountlist.php                   ← CRUD Promo & Broadcast Email
+│   └── userlist.php                       ← CRUD Data User
+│
+├── uploads/
+│   ├── 1782639171_6a40ea433396e.jpg
+│   └── 1782639511_6a40eb97d6cb1.jpg        ← Upload foto profil user
+│
+├── vendor/                               ← Library Composer (PHPMailer)
+│
+├── .gitignore
+├── composer.json
+├── composer.lock
+│
+├── dashboardadmin.php                    ← Dashboard Admin
+├── dashboardmanager.php                  ← Dashboard Manager
+├── dashboardcustomer.php                 ← Dashboard Customer
+│
+├── index.php                             ← Landing Page
+├── logout.php                            ← Logout Session
+├── inc.koneksi.php                       ← Koneksi database (Prosedural)
+├── update_passwords.php                  ← Utility update password
+└── README.md                             ← Dokumentasi project
 ```
 
 ---
